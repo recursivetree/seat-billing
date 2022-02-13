@@ -21,7 +21,7 @@
         <div class="tab-pane active" id="tab1">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ trans('billing::billing.previousbill') }}</h3>
+                    <h3 class="card-title">{{ trans('billing::billing.summary-corp-mining') }}</h3>
                 </div>
                 <div class="card-body">
                     <table class="table table-striped">
@@ -51,7 +51,7 @@
         <div class="tab-pane" id="tab2">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ trans('billing::billing.previousbill') }}</h3>
+                    <h3 class="card-title">{{ trans('billing::billing.summary-corp-pve') }}</h3>
                 </div>
                 <div class="card-body">
                     <table class="table table-striped">
@@ -77,7 +77,7 @@
         <div class="tab-pane" id="tab3">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ trans('billing::billing.previousbill') }}</h3>
+                    <h3 class="card-title">{{ trans('billing::billing.summary-ind-mining') }}</h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">

@@ -1,6 +1,7 @@
 # seat-billing
-A billing system for mining/PvE costs for corps/alliances
+A billing system for mining/PvE costs for corps/alliances.
 
+Thanks to denngarr for writing the original plugin.
 
 ## Quick Installation:
 
@@ -9,7 +10,7 @@ In your seat directory (By default:  /var/www/seat), type the following:
 ```
 php artisan down
 
-composer require denngarr/seat-billing
+composer require recursivetree/seat-billing
 php artisan vendor:publish --force
 php artisan migrate
 

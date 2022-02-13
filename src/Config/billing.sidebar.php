@@ -5,17 +5,17 @@ return [
         'name' => 'SeAT IRS',
         'icon' => 'fa-credit-card',
         'route_segment' => 'billing',
-        'permission' => 'billing.view_billing',
+        'permission' => 'billing.view',
         'entries' => [
             'billing' => [
                 'name' => 'Billing Statements',
-                'icon' => 'fa-money',
+                'icon' => 'fas fa-money-bill',
                 'route' => 'billing.view',
                 'permission' => 'billing.view',
             ],
             'settings' => [
                 'name' => 'Settings',
-                'icon' => 'fa-gear',
+                'icon' => 'fas fa-cog',
                 'route' => 'billing.settings',
                 'permission' => 'billing.settings',
             ],

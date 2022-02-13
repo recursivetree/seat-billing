@@ -68,8 +68,6 @@ class BillingController extends Controller
 
         $stats = $stats->get();
 
-        dd($stats);
-
         $alliances = Alliance::whereIn('alliance_id', CorporationInfo::select('alliance_id'))->orderBy('name')->get();
 
         $dates = $this->getCorporationBillingMonths($stats->pluck('corporation_id')->toArray());

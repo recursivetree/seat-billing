@@ -1,5 +1,5 @@
 {
-    "name": "denngarr/seat-billing",
+    "name": "recursivetree/seat-billing",
     "description": "Plugin to assist with corp/alliance billing statements",
     "type": "seat-plugin",
     "license": "GPL-2.0-only",
@@ -7,6 +7,10 @@
         {
             "name": "Denngarr B'tarn",
             "email": "ed.stafford@gmail.com"
+        },
+        {
+            "name": "recursivetree",
+            "email": "recursivetreemail@gmail.com"
         }
     ],
     "minimum-stability": "stable",
@@ -23,8 +27,8 @@
         }
     },
     "require": {
-        "eveseat/services": "^3.0",
-        "eveseat/eveapi": "^3.0",
-        "eveseat/web": "^3.0"
+        "eveseat/services": "^4.0",
+        "eveseat/eveapi": "^4.0",
+        "eveseat/web": "^4.0"
     }
 }
