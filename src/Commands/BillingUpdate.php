@@ -3,19 +3,14 @@
 namespace Denngarr\Seat\Billing\Commands;
 
 use Illuminate\Console\Command;
-use Seat\Eveapi\Models\Character\CharacterInfo;
-use Seat\Eveapi\Models\Industry\CharacterMining;
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
-use Seat\Services\Repositories\Character\MiningLedger as CharacterLedger;
-use Seat\Services\Repositories\Corporation\Ledger;
-use Seat\Services\Repositories\Corporation\MiningLedger;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 
 class BillingUpdate extends Command
 {
-    use BillingHelper, Ledger, MiningLedger;
+    use BillingHelper;
 
     /**
      * The name and signature of the console command.
@@ -70,7 +65,7 @@ class BillingUpdate extends Command
                 }
                 $rates = $this->getCorporateTaxRate($corp->corporation_id);
 
-                $bill = new CorporationBill;
+                $bill = new CorporationBill();
                 $bill->corporation_id = $corp->corporation_id;
                 $bill->year = $year;
                 $bill->month = $month;
@@ -89,7 +84,7 @@ class BillingUpdate extends Command
                         ->where('month', $month)
                         ->get();
                     if ((count($bill) == 0) || ($this->option('force') == true)) {
-                        $bill = new CharacterBill;
+                        $bill = new CharacterBill();
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;
                         $bill->year = $year;

@@ -7,15 +7,12 @@ use Seat\Web\Http\Controllers\Controller;
 use Seat\Eveapi\Models\Alliances\Alliance;
 use Seat\Eveapi\Models\Character\CharacterInfo;
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
-use Seat\Services\Repositories\Character\MiningLedger as CharacterLedger;
-use Seat\Services\Repositories\Corporation\Ledger;
-use Seat\Services\Repositories\Corporation\MiningLedger;
 use Denngarr\Seat\Billing\Validation\ValidateSettings;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 
 class BillingController extends Controller
 {
-    use MiningLedger, Ledger, CharacterLedger, BillingHelper;
+    use BillingHelper;
 
     public function getLiveBillingView(int $alliance_id = 0)
     {
@@ -39,11 +36,11 @@ class BillingController extends Controller
 
         $bounty_stats = DB::table('corporation_wallet_journals')
             ->select('corporation_infos.corporation_id')
-            ->selectRaw('SUM(amount) / tax_rate as bounties')
+            ->selectRaw('SUM(amount) / corporation_infos.tax_rate as bounties')
             ->join('corporation_infos', 'corporation_wallet_journals.corporation_id', '=', 'corporation_infos.corporation_id')
             ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
             ->whereBetween('date', [$start_date, $end_date])
-            ->groupBy('corporation_id');
+            ->groupBy('corporation_id','corporation_infos.tax_rate');
 
         $stats = DB::table('corporation_infos')
             ->select('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
@@ -63,13 +60,15 @@ class BillingController extends Controller
             })
             ->mergeBindings($mining_stats)
             ->mergeBindings($bounty_stats)
-            ->groupBy('corporation_id', 'alliance_id', 'name', 'tax_rate', 'mining', 'bounties')
+            ->groupBy('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
             ->orderBy('name');
 
         if ($alliance_id !== 0)
             $stats->where('alliance_id', $alliance_id);
 
         $stats = $stats->get();
+
+        dd($stats);
 
         $alliances = Alliance::whereIn('alliance_id', CorporationInfo::select('alliance_id'))->orderBy('name')->get();
 
@@ -80,7 +79,7 @@ class BillingController extends Controller
 
     private function getCorporations()
     {
-        if (auth()->user()->hasSuperUser()) {
+        if (auth()->user()->admin) {
             $corporations = CorporationInfo::orderBy('name')->get();
         } else {
             $corpids = CharacterInfo::whereIn('character_id', auth()->user()->associatedCharacterIds())
@@ -116,6 +115,7 @@ class BillingController extends Controller
 
     public function getUserBilling($corporation_id)
     {
+
         $summary = $this->getMainsBilling($corporation_id);
 
         return $summary;

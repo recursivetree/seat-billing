@@ -2,10 +2,10 @@
 
 namespace Denngarr\Seat\Billing;
 
-use Illuminate\Support\ServiceProvider;
+use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
 
-class BillingServiceProvider extends ServiceProvider
+class BillingServiceProvider extends AbstractSeatPlugin
 {
     /**
      * Bootstrap the application services.
@@ -16,7 +16,7 @@ class BillingServiceProvider extends ServiceProvider
     {
         $this->add_routes();
         $this->add_views();
-        $this->add_publications();
+        $this->add_migrations();
         $this->add_translations();
         $this->add_commands();
     }
@@ -51,27 +51,21 @@ class BillingServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__ . '/Config/billing.config.php',
-            'billing.config'
-        );
 
         $this->mergeConfigFrom(
             __DIR__ . '/Config/billing.sidebar.php',
             'package.sidebar'
         );
 
-        $this->mergeConfigFrom(
+        $this->registerPermissions(
             __DIR__ . '/Config/billing.permissions.php',
-            'web.permissions'
+            'billing'
         );
     }
 
-    public function add_publications()
+    public function add_migrations()
     {
-        $this->publishes([
-            __DIR__ . '/database/migrations/' => database_path('migrations'),
-        ]);
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/');
     }
 
     private function add_commands()
@@ -79,5 +73,32 @@ class BillingServiceProvider extends ServiceProvider
         $this->commands([
             BillingUpdate::class,
         ]);
+    }
+
+    /**
+     * Return the plugin public name as it should be displayed into settings.
+     *
+     * @example SeAT Web
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'SeAT Billing';
+    }
+
+    public function getPackageRepositoryUrl(): string
+    {
+        return 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    }
+
+    public function getPackagistPackageName(): string
+    {
+        return 'seat-billing';
+    }
+
+    public function getPackagistVendorName(): string
+    {
+        return 'recursivetree';
     }
 }

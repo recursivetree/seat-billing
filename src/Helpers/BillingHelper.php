@@ -5,55 +5,50 @@ namespace Denngarr\Seat\Billing\Helpers;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Character\CharacterInfo;
-use Seat\Eveapi\Models\Corporation\CorporationInfo;
-use Seat\Eveapi\Models\Industry\CharacterMining;
-use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 use Seat\Services\Models\UserSetting;
-use Seat\Services\Repositories\Corporation\Members;
 use Seat\Web\Models\User;
+use Illuminate\Support\Collection;
+
+use Illuminate\Database\Eloquent\Builder;
+use Seat\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 trait BillingHelper
 {
-    use Members;
+
+    public function getCorporationMemberTracking(int $corporation_id): Builder
+    {
+
+        return CorporationMemberTracking::where('corporation_id', $corporation_id);
+
+    }
 
     public function getCharacterBilling($corporation_id, $year, $month)
     {
 
         if (setting("pricevalue", true) == "m") {
-            $ledger = DB::table('character_minings')->select('user_settings.value', DB::raw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * ' . 
-                (setting("refinerate", true) / 100) . ') * market_prices.adjusted_price) as amounts'))
+            $ledger = DB::table('character_minings')
+                ->select('users.main_character_id')
+                ->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * ' . (setting("refinerate", true) / 100) . ') * market_prices.adjusted_price) as amounts')
                 ->join('invTypeMaterials', 'character_minings.type_id', 'invTypeMaterials.typeID')
                 ->join('market_prices', 'invTypeMaterials.materialTypeID', 'market_prices.type_id')
-                ->join('corporation_member_trackings', function($join) use ($corporation_id) {
-                     $join->on('corporation_member_trackings.character_id', 'character_minings.character_id')
-                         ->where('corporation_member_trackings.corporation_id', $corporation_id);
-                })
-                ->join('users', 'users.id', 'corporation_member_trackings.character_id')
-                ->join('user_settings', function ($join) {
-                    $join->on('user_settings.group_id', 'users.group_id')
-                        ->where('user_settings.name', 'main_character_id');
-                })
+                ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')
+                ->join('users', 'users.main_character_id', 'corporation_members.character_id')
                 ->where('year', $year)
                 ->where('month', $month)
-                ->groupby('user_settings.value')
+                ->where('corporation_members.corporation_id', $corporation_id)
+                ->groupby('users.main_character_id')
                 ->get();
         } else {
-
-            $ledger = DB::table('character_minings')->select('user_settings.value', DB::raw('SUM(character_minings.quantity * market_prices.average_price) as amounts'))
+            $ledger = DB::table('character_minings')
+                ->select('users.main')
+                ->selectRaw('SUM(character_minings.quantity * market_prices.average_price) as amounts')
                 ->join('market_prices', 'character_minings.type_id', 'market_prices.type_id')
-                ->join('corporation_member_trackings', function($join) use ($corporation_id) {
-                     $join->on('corporation_member_trackings.character_id', 'character_minings.character_id')
-                         ->where('corporation_member_trackings.corporation_id', $corporation_id);
-                })
-                ->join('users', 'users.id', 'corporation_member_trackings.character_id')
-                ->join('user_settings', function ($join) {
-                    $join->on('user_settings.group_id', 'users.group_id')
-                        ->where('user_settings.name', 'main_character_id');
-                })
+                ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')
+                ->join('users', 'users.main_character_id', 'corporation_members.character_id')
                 ->where('year', $year)
                 ->where('month', $month)
-                ->groupby('user_settings.value')
+                ->where('corporation_members.corporation_id', $corporation_id)
+                ->groupby('users.main_character_id')
                 ->get();
         }
 
@@ -68,33 +63,34 @@ trait BillingHelper
     public function getMainsBilling($corporation_id, $year = null, $month = null)
     {
         if (is_null($year)) {
-           $year = date('Y');
+            $year = date('Y');
         }
         if (is_null($month)) {
-           $month = date('n');
+            $month = date('n');
         }
-     
+
         $summary = [];
         $taxrates = $this->getCorporateTaxRate($corporation_id);
 
         $ledger = $this->getCharacterBilling($corporation_id, $year, $month);
 
         foreach ($ledger as $entry) {
-            if (!isset($summary[$entry->value])) {
-                $summary[$entry->value]['amount'] = 0;
+
+
+            if (!isset($summary[$entry->main_character_id])) {
+                $summary[$entry->main_character_id]['amount'] = 0;
             }
 
-            $summary[$entry->value]['amount'] += $entry->amounts;
-            $summary[$entry->value]['id'] = $entry->value;
-            $summary[$entry->value]['taxrate'] = $taxrates['taxrate'] / 100;
-            $summary[$entry->value]['modifier'] = $taxrates['modifier'] / 100;
+            $summary[$entry->main_character_id]['amount'] += $entry->amounts;
+            $summary[$entry->main_character_id]['id'] = $entry->main_character_id;
+            $summary[$entry->main_character_id]['taxrate'] = $taxrates['taxrate'] / 100;
+            $summary[$entry->main_character_id]['modifier'] = $taxrates['modifier'] / 100;
         }
         return $summary;
     }
 
     public function getCorporateTaxRate($corporation_id)
     {
-        $reg_chars = 0;
         $tracking = $this->getTrackingMembers($corporation_id);
         $total_chars = $tracking->count();
         if ($total_chars == 0) {
@@ -102,10 +98,12 @@ trait BillingHelper
         }
 
         $reg_chars = $tracking->get()->filter(function ($value) {
-            if (is_null($value->user))
+            $user = User::where("main_character_id", $value->character_id)->first();
+
+            if (is_null($user))
                 return false;
 
-            return ! is_null($value->user->refresh_token);
+            return !is_null($value->refresh_token);
         })->count();
 
         $mining_taxrate = setting('ioretaxrate', true);
@@ -126,14 +124,6 @@ trait BillingHelper
         $ledgers = $this->getCharacterBilling($corporation_id, $year, $month);
 
         return $ledgers->sum('amounts');
-    }
-
-
-    private function getBountyTotal($corporation_id, $year, $month)
-    {
-        $bounties = $this->getCorporationLedgerBountyPrizeByMonth($corporation_id, $year, $month);
-
-        return $bounties->sum('total');
     }
 
     private function getCorporationBillingMonths($corporation_id)
@@ -165,6 +155,32 @@ trait BillingHelper
             ->where("month", $month)
             ->where("year", $year)
             ->get();
+    }
+
+    public function getCorporationLedgerBountyPrizeByMonth(int $corporation_id, int $year = null, int $month = null): Collection
+    {
+        $query = DB::table('corporation_wallet_journals')
+            ->select("second_party_id")
+            ->selectRaw('MONTH(date) as month')
+            ->selectRaw('YEAR(date) as year')
+            ->selectRaw('ROUND(SUM(amount)) as total')
+            ->where('corporation_id', $corporation_id)
+            ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize', 'ess_escrow_transfer'])
+            ->where(DB::raw('YEAR(date)'), !is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(date)'), !is_null($month) ? $month : date('m'))
+            ->groupBy('second_party_id','date')
+            ->orderBy(DB::raw('SUM(amount)'), 'desc');
+
+
+        return $query->get();
+    }
+
+    private function getBountyTotal($corporation_id, $year, $month)
+    {
+        $bounties = $this->getCorporationLedgerBountyPrizeByMonth($corporation_id, $year, $month);
+        $total = $bounties->sum('total');
+
+        return $total;
     }
 
 }
