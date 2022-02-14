@@ -40,7 +40,7 @@ trait BillingHelper
                 ->get();
         } else {
             $ledger = DB::table('character_minings')
-                ->select('users.main')
+                ->select('users.main_character_id')
                 ->selectRaw('SUM(character_minings.quantity * market_prices.average_price) as amounts')
                 ->join('market_prices', 'character_minings.type_id', 'market_prices.type_id')
                 ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')
