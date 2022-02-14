@@ -256,7 +256,7 @@
                     if (result) {
                         table.clear();
                         for (var chars in result) {
-                            table.row.add(['<a href=""><span class="id-to-name" data-id="' + chars + '">{{ trans('web::seat.unknown') }}</span></a>',
+                            table.row.add(['<a href="/characters/'+ chars +'/mining-ledger"><span class="id-to-name" data-id="' + chars + '">{{ trans('web::seat.unknown') }}</span></a>',
                                 (new Intl.NumberFormat('en-US').format(result[chars].amount)) + " ISK",
                                 (result[chars].modifier * 100) + "%",
                                 (result[chars].taxrate * 100) + "%",
