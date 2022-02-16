@@ -25,10 +25,11 @@ trait BillingHelper
     public function getCharacterBilling($corporation_id, $year, $month)
     {
 
+
         if (setting("pricevalue", true) == "m") {
             $ledger = DB::table('character_minings')
                 ->select('users.main_character_id')
-                ->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * ' . (setting("refinerate", true) / 100) . ') * market_prices.adjusted_price) as amounts')
+                ->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * ' . (setting("refinerate", true) / 100) . ') * market_prices.average_price) as amounts')
                 ->join('invTypeMaterials', 'character_minings.type_id', 'invTypeMaterials.typeID')
                 ->join('market_prices', 'invTypeMaterials.materialTypeID', 'market_prices.type_id')
                 ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')

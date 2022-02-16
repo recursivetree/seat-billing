@@ -19,6 +19,8 @@ class BillingController extends Controller
         $start_date = carbon()->startOfMonth()->toDateString();
         $end_date = carbon()->endOfMonth()->toDateString();
 
+        //dd($start_date,$end_date);
+
         $mining_stats = DB::table('corporation_member_trackings')
             ->select('corporation_id')
             ->leftJoin('character_minings', 'corporation_member_trackings.character_id', '=', 'character_minings.character_id')
@@ -26,7 +28,7 @@ class BillingController extends Controller
             ->groupBy('corporation_id');
 
         if (setting("pricevalue", true) == "m") {
-            $mining_stats = $mining_stats->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * (? / 100)) * adjusted_price) as mining', [(float) setting("refinerate", true)])
+            $mining_stats = $mining_stats->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * (? / 100)) * average_price) as mining', [(float) setting("refinerate", true)])
                 ->leftJoin('invTypeMaterials', 'character_minings.type_id', '=', 'invTypeMaterials.typeID')
                 ->leftJoin('market_prices', 'invTypeMaterials.materialTypeID', '=', 'market_prices.type_id');
         } else {
@@ -38,7 +40,7 @@ class BillingController extends Controller
             ->select('corporation_infos.corporation_id')
             ->selectRaw('SUM(amount) / corporation_infos.tax_rate as bounties')
             ->join('corporation_infos', 'corporation_wallet_journals.corporation_id', '=', 'corporation_infos.corporation_id')
-            ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize'])
+            ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize','ess_escrow_transfer'])
             ->whereBetween('date', [$start_date, $end_date])
             ->groupBy('corporation_id','corporation_infos.tax_rate');
 
@@ -115,6 +117,8 @@ class BillingController extends Controller
     {
 
         $summary = $this->getMainsBilling($corporation_id);
+
+        //dd($summary);
 
         return $summary;
     }
