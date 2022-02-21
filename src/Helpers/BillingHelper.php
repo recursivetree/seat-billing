@@ -92,20 +92,19 @@ trait BillingHelper
 
     public function getCorporateTaxRate($corporation_id)
     {
-        $tracking = $this->getTrackingMembers($corporation_id);
+        $tracking = $this->getCorporationMemberTracking($corporation_id);
         $total_chars = $tracking->count();
         if ($total_chars == 0) {
             $total_chars = 1;
         }
 
-        $reg_chars = $tracking->get()->filter(function ($value) {
-            $user = User::where("main_character_id", $value->character_id)->first();
-
-            if (is_null($user))
-                return false;
-
-            return !is_null($value->refresh_token);
-        })->count();
+        $reg_chars = DB::table("corporation_member_trackings")
+            ->where("corporation_id",$corporation_id)
+            ->join('refresh_tokens', function ($join) {
+                $join->on('corporation_member_trackings.character_id', '=', 'refresh_tokens.character_id')
+                    ->whereNull('deleted_at');
+            })
+            ->count();
 
         $mining_taxrate = setting('ioretaxrate', true);
         $mining_modifier = setting('ioremodifier', true);
@@ -130,13 +129,13 @@ trait BillingHelper
     private function getCorporationBillingMonths($corporation_id)
     {
         if (!is_array($corporation_id)) {
-            array_push($corporation_ids, $corporation_id);
+            $corporation_ids = [$corporation_id];
         } else {
             $corporation_ids = $corporation_id;
         }
 
         return CorporationBill::select(DB::raw('DISTINCT month, year'))
-            ->wherein('corporation_id', $corporation_ids)
+            ->whereIn('corporation_id', $corporation_ids)
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->get();
