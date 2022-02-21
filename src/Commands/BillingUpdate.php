@@ -58,11 +58,6 @@ class BillingUpdate extends Command
 
 
             if ((count($bill) == 0) || ($this->option('force') == true)) {
-                if (!$corp->tax_rate) {
-                    $corp_taxrate = .10;
-                } else {
-                    $corp_taxrate = $corp->tax_rate;
-                }
                 $rates = $this->getCorporateTaxRate($corp->corporation_id);
 
                 $bill = new CorporationBill();
@@ -70,7 +65,14 @@ class BillingUpdate extends Command
                 $bill->year = $year;
                 $bill->month = $month;
                 $bill->mining_bill = $this->getMiningTotal($corp->corporation_id, $year, $month);
-                $bill->pve_bill = $this->getBountyTotal($corp->corporation_id, $year, $month) / $corp_taxrate;
+
+                $bounties = 0;
+                $pve_data = $this->getBountyTotal($year, $month)->where('corporation_wallet_journals.corporation_id',$corp->corporation_id)->first();
+                if ($pve_data){
+                    $bounties = $pve_data->bounties;
+                }
+                $bill->pve_bill = $bounties;
+
                 $bill->mining_taxrate = $rates['taxrate'];
                 $bill->mining_modifier = $rates['modifier'];
                 $bill->pve_taxrate = $rates['pve'];

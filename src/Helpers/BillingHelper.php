@@ -175,12 +175,18 @@ trait BillingHelper
         return $query->get();
     }
 
-    private function getBountyTotal($corporation_id, $year, $month)
+    private function getBountyTotal($year, $month)
     {
-        $bounties = $this->getCorporationLedgerBountyPrizeByMonth($corporation_id, $year, $month);
-        $total = $bounties->sum('total');
+        $bounty_stats = DB::table('corporation_wallet_journals')
+            ->select("corporation_wallet_journals.corporation_id")
+            ->selectRaw('SUM(amount) / corporation_infos.tax_rate as bounties')
+            ->join('corporation_infos', 'corporation_infos.corporation_id', '=', 'corporation_wallet_journals.corporation_id')
+            ->whereIn('corporation_wallet_journals.ref_type', ['bounty_prizes', 'bounty_prize', 'ess_escrow_transfer'])
+            ->where(DB::raw('YEAR(corporation_wallet_journals.date)'), !is_null($year) ? $year : date('Y'))
+            ->where(DB::raw('MONTH(corporation_wallet_journals.date)'), !is_null($month) ? $month : date('m'))
+            ->groupBy('corporation_wallet_journals.corporation_id','corporation_infos.tax_rate');
 
-        return $total;
+        return $bounty_stats;
     }
 
 }

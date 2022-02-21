@@ -36,13 +36,7 @@ class BillingController extends Controller
                 ->leftJoin('market_prices', 'character_minings.type_id', '=', 'market_prices.type_id');
         }
 
-        $bounty_stats = DB::table('character_wallet_journals')
-            ->select('corporation_member_trackings.corporation_id')
-            ->selectRaw('SUM(amount) as bounties')
-            ->join('corporation_member_trackings', 'character_wallet_journals.character_id', '=', 'corporation_member_trackings.character_id')
-            ->whereIn('character_wallet_journals.ref_type', ['bounty_prizes', 'bounty_prize','ess_escrow_transfer'])
-            ->whereBetween('character_wallet_journals.date', [$start_date, $end_date])
-            ->groupBy('corporation_id');
+        $bounty_stats = $this->getBountyTotal(strval(carbon()->year),strval(carbon()->month));
 
         $stats = DB::table('corporation_infos')
             ->select('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
@@ -71,6 +65,8 @@ class BillingController extends Controller
             $stats->where('alliance_id', $alliance_id);
 
         $stats = $stats->get();
+
+        //dd($stats);
 
         $alliances = Alliance::whereIn('alliance_id', CorporationInfo::select('alliance_id'))->orderBy('name')->get();
 
