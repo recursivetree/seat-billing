@@ -36,24 +36,25 @@ class BillingController extends Controller
                 ->leftJoin('market_prices', 'character_minings.type_id', '=', 'market_prices.type_id');
         }
 
-        $bounty_stats = DB::table('corporation_wallet_journals')
-            ->select('corporation_infos.corporation_id')
-            ->selectRaw('SUM(amount) / corporation_infos.tax_rate as bounties')
-            ->join('corporation_infos', 'corporation_wallet_journals.corporation_id', '=', 'corporation_infos.corporation_id')
-            ->whereIn('ref_type', ['bounty_prizes', 'bounty_prize','ess_escrow_transfer'])
-            ->whereBetween('date', [$start_date, $end_date])
-            ->groupBy('corporation_id','corporation_infos.tax_rate');
+        $bounty_stats = DB::table('character_wallet_journals')
+            ->select('corporation_member_trackings.corporation_id')
+            ->selectRaw('SUM(amount) as bounties')
+            ->join('corporation_member_trackings', 'character_wallet_journals.character_id', '=', 'corporation_member_trackings.character_id')
+            ->whereIn('character_wallet_journals.ref_type', ['bounty_prizes', 'bounty_prize','ess_escrow_transfer'])
+            ->whereBetween('character_wallet_journals.date', [$start_date, $end_date])
+            ->groupBy('corporation_id');
 
         $stats = DB::table('corporation_infos')
             ->select('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
             ->selectRaw('COUNT(corporation_member_trackings.character_id) as members')
+
             ->selectRaw('COUNT(refresh_tokens.character_id) as actives')
             ->join('corporation_member_trackings', 'corporation_infos.corporation_id', '=', 'corporation_member_trackings.corporation_id')
-            ->leftJoin('users', 'corporation_member_trackings.character_id', '=', 'users.id')
             ->leftJoin('refresh_tokens', function ($join) {
-                $join->on('users.id', '=', 'refresh_tokens.character_id')
+                $join->on('corporation_member_trackings.character_id', '=', 'refresh_tokens.character_id')
                     ->whereNull('deleted_at');
             })
+
             ->leftJoin(DB::raw('(' . $mining_stats->toSql() . ') mining_stats'), function($join) {
                 $join->on('corporation_infos.corporation_id', '=', 'mining_stats.corporation_id');
             })
@@ -62,6 +63,7 @@ class BillingController extends Controller
             })
             ->mergeBindings($mining_stats)
             ->mergeBindings($bounty_stats)
+
             ->groupBy('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
             ->orderBy('name');
 

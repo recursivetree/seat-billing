@@ -172,7 +172,6 @@ trait BillingHelper
             ->groupBy('second_party_id','date')
             ->orderBy(DB::raw('SUM(amount)'), 'desc');
 
-
         return $query->get();
     }
 
