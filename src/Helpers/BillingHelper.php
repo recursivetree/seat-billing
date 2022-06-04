@@ -154,7 +154,8 @@ trait BillingHelper
 
     private function getPastMainsBillingByMonth($corporation_id, $year, $month)
     {
-        return CharacterBill::where("corporation_id", $corporation_id)
+        return CharacterBill::with('character:character_id,name')
+            ->where("corporation_id", $corporation_id)
             ->where("month", $month)
             ->where("year", $year)
             ->get();
