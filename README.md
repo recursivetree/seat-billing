@@ -5,23 +5,11 @@ Thanks to denngarr for writing the original plugin.
 
 ## Quick Installation:
 
-In your seat directory (By default:  /var/www/seat), type the following:
+See the instruction over at the [seat documentation](https://eveseat.github.io/docs/community_packages/).
 
-```
-php artisan down
-
-composer require recursivetree/seat-billing
-php artisan vendor:publish --force
-php artisan migrate
-
-php artisan up
-```
-
-And now, when you log into 'Seat', you should see a 'Seat IRS' link on the left.
-
+The package name is `recursivetree/seat-billing`.
 
 You should schedule a job to run Monthly called 'billing:update'.  This will calculate the bills for the corps each month.
-
 
 Good luck, and Happy Hunting!!  o7
 

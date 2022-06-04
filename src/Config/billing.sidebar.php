@@ -2,13 +2,13 @@
 
 return [
     'billing' => [
-        'name' => 'SeAT IRS',
+        'name' => 'SeAT Billing',
         'icon' => 'fa-credit-card',
         'route_segment' => 'billing',
         'permission' => 'billing.view',
         'entries' => [
             'billing' => [
-                'name' => 'Billing Statements',
+                'name' => 'Billing Data',
                 'icon' => 'fas fa-money-bill',
                 'route' => 'billing.view',
                 'permission' => 'billing.view',
