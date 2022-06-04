@@ -256,7 +256,8 @@
                     if (result) {
                         table.clear();
                         for (var chars in result) {
-                            table.row.add(['<a href="/characters/'+ chars +'/mining-ledger"><span class="id-to-name" data-id="' + chars + '">{{ trans('web::seat.unknown') }}</span></a>',
+                            const name = result[chars].name || "{{ trans('web::seat.unknown') }}"
+                            table.row.add(['<a href="/characters/'+ chars +'/mining-ledger">'+name+'</a>',
                                 (new Intl.NumberFormat('en-US').format(result[chars].amount)) + " ISK",
                                 (result[chars].modifier * 100) + "%",
                                 (result[chars].taxrate * 100) + "%",
