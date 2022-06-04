@@ -24,19 +24,18 @@ trait BillingHelper
 
     public function getCharacterBilling($corporation_id, $year, $month)
     {
-
-
         if (setting("pricevalue", true) == "m") {
             $ledger = DB::table('character_minings')
                 ->select('users.main_character_id')
                 ->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * ' . (setting("refinerate", true) / 100) . ') * market_prices.average_price) as amounts')
                 ->join('invTypeMaterials', 'character_minings.type_id', 'invTypeMaterials.typeID')
                 ->join('market_prices', 'invTypeMaterials.materialTypeID', 'market_prices.type_id')
-                ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')
-                ->join('users', 'users.main_character_id', 'corporation_members.character_id')
+                ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
+                ->join('refresh_tokens','refresh_tokens.character_id','character_minings.character_id')
+                ->join('users', 'users.id', 'refresh_tokens.user_id')
                 ->where('year', $year)
                 ->where('month', $month)
-                ->where('corporation_members.corporation_id', $corporation_id)
+                ->where('character_affiliations.corporation_id', $corporation_id)
                 ->groupby('users.main_character_id')
                 ->get();
         } else {
@@ -44,11 +43,12 @@ trait BillingHelper
                 ->select('users.main_character_id')
                 ->selectRaw('SUM(character_minings.quantity * market_prices.average_price) as amounts')
                 ->join('market_prices', 'character_minings.type_id', 'market_prices.type_id')
-                ->join('corporation_members', 'corporation_members.character_id', 'character_minings.character_id')
-                ->join('users', 'users.main_character_id', 'corporation_members.character_id')
+                ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
+                ->join('refresh_tokens','refresh_tokens.character_id','character_minings.character_id')
+                ->join('users', 'users.id', 'refresh_tokens.user_id')
                 ->where('year', $year)
                 ->where('month', $month)
-                ->where('corporation_members.corporation_id', $corporation_id)
+                ->where('character_affiliations.corporation_id', $corporation_id)
                 ->groupby('users.main_character_id')
                 ->get();
         }

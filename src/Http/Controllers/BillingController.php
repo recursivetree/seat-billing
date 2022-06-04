@@ -61,8 +61,9 @@ class BillingController extends Controller
             ->groupBy('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
             ->orderBy('name');
 
-        if ($alliance_id !== 0)
+        if ($alliance_id !== 0) {
             $stats->where('alliance_id', $alliance_id);
+        }
 
         $stats = $stats->get();
 
