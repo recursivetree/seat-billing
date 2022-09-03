@@ -3,7 +3,7 @@
 return [
     'billing' => [
         'name' => 'SeAT Billing',
-        'icon' => 'fa-credit-card',
+        'icon' => 'fas fa-credit-card',
         'route_segment' => 'billing',
         'permission' => 'billing.view',
         'entries' => [
