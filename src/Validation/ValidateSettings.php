@@ -14,13 +14,13 @@ class ValidateSettings extends FormRequest
     public function rules()
     {
         return [
-            'oremodifier'    => 'min:0|max:200',
-            'oretaxrate'     => 'min:0|max:200',
-            'bountytaxrate'  => 'min:0|max:200',
-            'ioremodifier'   => 'min:0|max:200',
-            'ioretaxrate'    => 'min:0|max:200',
-            'ibountytaxrate' => 'min:0|max:200',
-            'irate'          => 'min:0|max:200',
+            'oremodifier'    => 'required|integer|min:0|max:200',
+            'oretaxrate'     => 'required|integer|min:0|max:200',
+            'bountytaxrate'  => 'required|integer|min:0|max:200',
+            'ioremodifier'   => 'required|integer|min:0|max:200',
+            'ioretaxrate'    => 'required|integer|min:0|max:200',
+            'ibountytaxrate' => 'required|integer|min:0|max:200',
+            'irate'          => 'required|integer|min:0|max:200',
         ];
     }
 }

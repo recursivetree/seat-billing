@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <label for="oremodifier">Ore value modifier</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="oremodifier" id="oremodifier"
+                        <input class="form-control" type="number" name="oremodifier" id="oremodifier"
                                value="{{ setting('oremodifier', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <label for="oretaxrate">Ore TAX Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="oretaxrate" id="oretaxrate" size="4"
+                        <input class="form-control" type="number" name="oretaxrate" id="oretaxrate" size="4"
                                value="{{ setting('oretaxrate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -36,7 +36,7 @@
                 <div class="form-group">
                     <label for="refinerate">Ore Refining Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="refinerate" id="refinerate" size="4"
+                        <input class="form-control" type="number" name="refinerate" id="refinerate" size="4"
                                value="{{ setting('refinerate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="form-group">
                     <label for="bountytaxrate">Bounty TAX Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="bountytaxrate" id="bountytaxrate"
+                        <input class="form-control" type="number" name="bountytaxrate" id="bountytaxrate"
                                value="{{ setting('bountytaxrate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -58,7 +58,7 @@
                 <div class="form-group">
                     <label for="ioremodifier">Ore value modifier</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="ioremodifier" id="ioremodifier"
+                        <input class="form-control" type="number" name="ioremodifier" id="ioremodifier"
                                value="{{ setting('ioremodifier', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -67,7 +67,7 @@
                 <div class="form-group">
                     <label for="ioretaxrate">Ore TAX Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="ioretaxrate" id="ioretaxrate"
+                        <input class="form-control" type="number" name="ioretaxrate" id="ioretaxrate"
                                value="{{ setting('ioretaxrate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -76,7 +76,7 @@
                 <div class="form-group">
                     <label for="ibountytaxrate">Bounty TAX Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="ibountytaxrate" id="ibountytaxrate"
+                        <input class="form-control" type="number" name="ibountytaxrate" id="ibountytaxrate"
                                value="{{ setting('ibountytaxrate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
@@ -85,7 +85,7 @@
                 <div class="form-group">
                     <label for="irate">Rates Threshold</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="text" name="irate" id="irate"
+                        <input class="form-control" type="number" name="irate" id="irate"
                                value="{{ setting('irate', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>

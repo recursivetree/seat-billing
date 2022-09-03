@@ -99,15 +99,15 @@ class BillingController extends Controller
 
     public function saveBillingSettings(ValidateSettings $request)
     {
-        setting(["oremodifier", $request->oremodifier], true);
-        setting(["oretaxrate", $request->oretaxrate], true);
-        setting(["refinerate", $request->refinerate], true);
-        setting(["bountytaxrate", $request->bountytaxrate], true);
-        setting(["ioremodifier", $request->ioremodifier], true);
-        setting(["ioretaxrate", $request->ioretaxrate], true);
-        setting(["ibountytaxrate", $request->ibountytaxrate], true);
-        setting(["irate", $request->irate], true);
-        setting(["pricevalue", $request->pricevalue], true);
+        setting(["oremodifier", intval($request->oremodifier)], true);
+        setting(["oretaxrate", intval($request->oretaxrate)], true);
+        setting(["refinerate", intval($request->refinerate)], true);
+        setting(["bountytaxrate", intval($request->bountytaxrate)], true);
+        setting(["ioremodifier", intval($request->ioremodifier)], true);
+        setting(["ioretaxrate", intval($request->ioretaxrate)], true);
+        setting(["ibountytaxrate", intval($request->ibountytaxrate)], true);
+        setting(["irate", intval($request->irate)], true);
+        setting(["pricevalue", intval($request->pricevalue)], true);
 
         return redirect()->back()->with('success', 'Billing Settings have successfully been updated.');
     }
