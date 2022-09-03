@@ -24,25 +24,29 @@
                     <h3 class="card-title">{{ trans('billing::billing.summary-corp-mining') }}</h3>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Corporation</th>
-                            <th>Mined Amount</th>
-                            <th>Percentage of Market Value</th>
-                            <th>Adjusted Value</th>
-                            <th>Tax Rate</th>
-                            <th>Tax Owed</th>
-                        </tr>
-                        @foreach($stats as $row)
+                    <table class="table table-striped" id="livenumbers">
+                        <thead>
                             <tr>
-                                <td>{{ $row->corporation->name }}</td>
-                                <td>{{ number_format($row->mining_bill, 2) }}</td>
-                                <td>{{ $row->mining_modifier }}%</td>
-                                <td>{{ number_format(($row->mining_bill * ($row->mining_modifier / 100)),2) }}</td>
-                                <td>{{ $row->mining_taxrate }}%</td>
-                                <td>{{ number_format((($row->mining_bill * ($row->mining_modifier / 100)) * ($row->mining_taxrate / 100)),2) }}</td>
+                                <th>Corporation</th>
+                                <th>Mined Amount</th>
+                                <th>Percentage of Market Value</th>
+                                <th>Adjusted Value</th>
+                                <th>Tax Rate</th>
+                                <th>Tax Owed</th>
                             </tr>
-                        @endforeach
+                        </thead>
+                        <tbody>
+                            @foreach($stats as $row)
+                                <tr>
+                                    <td>{{ $row->corporation->name }}</td>
+                                    <td>{{ number_format($row->mining_bill, 2) }}</td>
+                                    <td>{{ $row->mining_modifier }}%</td>
+                                    <td>{{ number_format(($row->mining_bill * ($row->mining_modifier / 100)),2) }}</td>
+                                    <td>{{ $row->mining_taxrate }}%</td>
+                                    <td>{{ number_format((($row->mining_bill * ($row->mining_modifier / 100)) * ($row->mining_taxrate / 100)),2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -54,22 +58,26 @@
                     <h3 class="card-title">{{ trans('billing::billing.summary-corp-pve') }}</h3>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Corporation</th>
-                            <th>Total Bounties</th>
-                            <th>Tax Rate</th>
-                            <th>Tax Owed</th>
-                        </tr>
-                        @foreach($stats as $row)
+                    <table class="table table-striped" id="livepve">
+                        <thead>
                             <tr>
-
-                                <td>{{ $row->corporation->name }}</td>
-                                <td>{{ number_format($row->pve_bill, 2) }}</td>
-                                <td>{{ $row->pve_taxrate }}%</td>
-                                <td>{{ number_format(($row->pve_bill * ($row->pve_taxrate / 100)),2) }}</td>
+                                <th>Corporation</th>
+                                <th>Total Bounties</th>
+                                <th>Tax Rate</th>
+                                <th>Tax Owed</th>
                             </tr>
-                        @endforeach
+                        </thead>
+                        <tbody>
+                            @foreach($stats as $row)
+                                <tr>
+
+                                    <td>{{ $row->corporation->name }}</td>
+                                    <td>{{ number_format($row->pve_bill, 2) }}</td>
+                                    <td>{{ $row->pve_taxrate }}%</td>
+                                    <td>{{ number_format(($row->pve_bill * ($row->pve_taxrate / 100)),2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -174,5 +182,10 @@
                 });
             }
         });
+
+        $(document).ready( function () {
+            $('#livenumbers').DataTable();
+            $('#livepve').DataTable();
+        } );
     </script>
 @endpush
