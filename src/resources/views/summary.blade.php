@@ -4,6 +4,8 @@
 @section('page_header', trans('billing::billing.summary-live'))
 
 @section('full')
+    @include("treelib::giveaway")
+
     <ul class="nav nav-pills pb-3">
         <li class="nav-item"><a class="nav-link" href="#tab3"
                                 data-toggle="tab">{{ trans('billing::billing.summary-ind-mining') }}</a></li>

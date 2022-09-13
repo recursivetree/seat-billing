@@ -4,6 +4,8 @@
 @section('page_header', trans('billing::billing.settings'))
 
 @section('left')
+    @include("treelib::giveaway")
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">{{ trans('billing::billing.settings') }}</h3>

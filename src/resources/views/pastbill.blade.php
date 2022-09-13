@@ -4,6 +4,8 @@
 @section('page_header', trans('billing::billing.pastbill'))
 
 @section('full')
+    @include("treelib::giveaway")
+
     <input type="hidden" id="year" value="{{ $year }}">
     <input type="hidden" id="month" value="{{ $month }}">
 
