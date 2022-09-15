@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing;
 
+use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
 use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
 
@@ -72,6 +73,7 @@ class BillingServiceProvider extends AbstractSeatPlugin
     {
         $this->commands([
             BillingUpdate::class,
+            BillingUpdateLive::class
         ]);
     }
 

@@ -5,6 +5,7 @@ use Denngarr\Seat\Billing\Models\CorporationBill;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Seat\Services\Models\Schedule;
 
 class ChangeBillFormat extends Migration
 {
@@ -61,6 +62,13 @@ class ChangeBillFormat extends Migration
         $old_incentivised_tax = (setting("ibountytaxrate",true) ?? 0) / 100;
         $incentive_modifier = floor((($tax_rate===0)? 1 : $old_incentivised_tax / $tax_rate) * 100);
         setting(["ioretaxmodifier",$incentive_modifier],true);
+
+        $schedule = new Schedule();
+        $schedule->command = "billing:update:live";
+        $schedule->expression = "0 0 * * *";
+        $schedule->allow_overlap = false;
+        $schedule->allow_maintenance = false;
+        $schedule->save();
     }
 
     /**

@@ -45,7 +45,7 @@
                             @if($stats->isEmpty())
                                 <tr>
                                     <td colspan="3">
-                                        There is nothing to show here. Please make sure to schedule the <code>billing:update</code> job on a <b>daily</b> schedule to get daily updates. You can also maually trigger an update by running <code>php artisan billing:update</code>.
+                                        There is nothing to show here. Please make sure to schedule the <code>billing:update:live</code> job on a <b>daily</b> schedule to get daily updates. You can also manually trigger an update by running <code>php artisan billing:update:live</code>.
                                     </td>
                                 </tr>
                             @endif
