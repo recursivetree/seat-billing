@@ -2,13 +2,16 @@
 
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
+use Denngarr\Seat\Billing\Models\OreTax;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Sde\InvGroup;
 use Seat\Web\Http\Controllers\Controller;
 use Seat\Eveapi\Models\Alliances\Alliance;
 use Seat\Eveapi\Models\Character\CharacterInfo;
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
 use Denngarr\Seat\Billing\Validation\ValidateSettings;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
+use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
@@ -19,59 +22,11 @@ class BillingController extends Controller
         $start_date = carbon()->startOfMonth()->toDateString();
         $end_date = carbon()->endOfMonth()->toDateString();
 
-        //dd($start_date,$end_date);
-
-        $mining_stats = DB::table('corporation_member_trackings')
-            ->select('corporation_id')
-            ->leftJoin('character_minings', 'corporation_member_trackings.character_id', '=', 'character_minings.character_id')
-            ->whereBetween('date', [$start_date, $end_date])
-            ->groupBy('corporation_id');
-
-        if (setting("pricevalue", true) == "m") {
-            $mining_stats = $mining_stats->selectRaw('SUM((character_minings.quantity / 100) * (invTypeMaterials.quantity * (? / 100)) * average_price) as mining', [(float) setting("refinerate", true)])
-                ->leftJoin('invTypeMaterials', 'character_minings.type_id', '=', 'invTypeMaterials.typeID')
-                ->leftJoin('market_prices', 'invTypeMaterials.materialTypeID', '=', 'market_prices.type_id');
-        } else {
-            $mining_stats = $mining_stats->selectRaw('SUM(character_minings.quantity * market_prices.average_price) as mining')
-                ->leftJoin('market_prices', 'character_minings.type_id', '=', 'market_prices.type_id');
-        }
-
-        $bounty_stats = $this->getBountyTotal(strval(carbon()->year),strval(carbon()->month));
-
-        $stats = DB::table('corporation_infos')
-            ->select('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
-            ->selectRaw('COUNT(corporation_member_trackings.character_id) as members')
-
-            ->selectRaw('COUNT(refresh_tokens.character_id) as actives')
-            ->join('corporation_member_trackings', 'corporation_infos.corporation_id', '=', 'corporation_member_trackings.corporation_id')
-            ->leftJoin('refresh_tokens', function ($join) {
-                $join->on('corporation_member_trackings.character_id', '=', 'refresh_tokens.character_id')
-                    ->whereNull('deleted_at');
-            })
-
-            ->leftJoin(DB::raw('(' . $mining_stats->toSql() . ') mining_stats'), function($join) {
-                $join->on('corporation_infos.corporation_id', '=', 'mining_stats.corporation_id');
-            })
-            ->leftJoin(DB::raw('(' . $bounty_stats->toSql() . ') bounty_stats'), function ($join) {
-                $join->on('corporation_infos.corporation_id', '=', 'bounty_stats.corporation_id');
-            })
-            ->mergeBindings($mining_stats)
-            ->mergeBindings($bounty_stats)
-
-            ->groupBy('corporation_infos.corporation_id', 'corporation_infos.alliance_id', 'corporation_infos.name', 'corporation_infos.tax_rate', 'mining', 'bounties')
-            ->orderBy('name');
-
-        if ($alliance_id !== 0) {
-            $stats->where('alliance_id', $alliance_id);
-        }
-
-        $stats = $stats->get();
-
-        //dd($stats);
+        $stats = collect();
 
         $alliances = Alliance::whereIn('alliance_id', CorporationInfo::select('alliance_id'))->orderBy('name')->get();
 
-        $dates = $this->getCorporationBillingMonths($stats->pluck('corporation_id')->toArray());
+        $dates = $this->getCorporationBillingMonths();
 
         return view('billing::summary', compact('alliances', 'stats', 'dates'));
     }
@@ -94,22 +49,47 @@ class BillingController extends Controller
 
     public function getBillingSettings()
     {
-        return view('billing::settings');
+        $ore_tax = OreTax::all();
+
+        return view('billing::settings', compact("ore_tax"));
     }
 
-    public function saveBillingSettings(ValidateSettings $request)
+    public function saveBillingSettings(Request $request)
     {
+        $request->validate([
+            'oremodifier'       => 'required|integer|min:0|max:200',
+            'oretaxrate'        => 'required|integer|min:0|max:200',
+            'bountytaxrate'     => 'required|integer|min:0|max:200',
+            'ioremodifier'      => 'required|integer|min:0|max:200',
+            'ioretaxmodifier'       => 'required|integer|min:0|max:200',
+            'ibountytaxmodifier'    => 'required|integer|min:0|max:200',
+            'irate'             => 'required|integer|min:0|max:200',
+            'r64taxmodifier'    => 'required|integer|min:0',
+            'r16taxmodifier'    => 'required|integer|min:0',
+            'r32taxmodifier'    => 'required|integer|min:0',
+            'r8taxmodifier'     => 'required|integer|min:0',
+            'r4taxmodifier'     => 'required|integer|min:0',
+            'gastax'     => 'required|integer|min:0',
+        ]);
+
         setting(["oremodifier", intval($request->oremodifier)], true);
         setting(["oretaxrate", intval($request->oretaxrate)], true);
         setting(["refinerate", intval($request->refinerate)], true);
         setting(["bountytaxrate", intval($request->bountytaxrate)], true);
         setting(["ioremodifier", intval($request->ioremodifier)], true);
-        setting(["ioretaxrate", intval($request->ioretaxrate)], true);
-        setting(["ibountytaxrate", intval($request->ibountytaxrate)], true);
+        setting(["ioretaxmodifier", intval($request->ioretaxmodifier)], true);
+        setting(["ibountytaxmodifier", intval($request->ibountytaxmodifier)], true);
         setting(["irate", intval($request->irate)], true);
-        setting(["pricevalue", intval($request->pricevalue)], true);
+        setting(["pricevalue", $request->pricevalue], true);
 
-        return redirect()->back()->with('success', 'Billing Settings have successfully been updated.');
+        OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1921],["tax_rate"=>intval($request->r16taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1920],["tax_rate"=>intval($request->r8taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1884],["tax_rate"=>intval($request->r4taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>711],["tax_rate"=>intval($request->gastax)]);
+
+        return redirect()->route("billing.settings")->with('success', 'Billing Settings have successfully been updated.');
     }
 
     public function getUserBilling($corporation_id)
@@ -129,13 +109,19 @@ class BillingController extends Controller
         return $summary;
     }
 
-    public function previousBillingCycle($year, $month)
+    public function showCurrentBill()
     {
-        $corporations = $this->getCorporations();
+        $year = date('Y');
+        $month = date('n');
+
+        return $this->showBill($year, $month);
+    }
+
+    public function showBill($year, $month)
+    {
 
         $stats = $this->getCorporationBillByMonth($year, $month)->sortBy('corporation.name');
-
-        $dates = $this->getCorporationBillingMonths($corporations->pluck('corporation_id')->toArray());
+        $dates = $this->getCorporationBillingMonths();
 
         return view('billing::pastbill', compact('stats', 'dates', 'year', 'month'));
     }

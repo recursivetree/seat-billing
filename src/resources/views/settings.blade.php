@@ -26,16 +26,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="oretaxrate">Ore TAX Rate</label>
-                    <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="number" name="oretaxrate" id="oretaxrate" size="4"
-                               value="{{ setting('oretaxrate', true) }}"/>
-                        <div class="pl-2">%</div>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
                     <label for="refinerate">Ore Refining Rate</label>
                     <div class="d-flex flex-row align-items-baseline">
                         <input class="form-control" type="number" name="refinerate" id="refinerate" size="4"
@@ -53,7 +43,7 @@
                     </div>
                 </div>
 
-                <hr/>
+                <hr>
 
                 <h4>Incentivized Settings</h4>
 
@@ -67,19 +57,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="ioretaxrate">Ore TAX Rate</label>
+                    <label for="ioretaxmodifier">Ore Tax Modifier</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="number" name="ioretaxrate" id="ioretaxrate"
-                               value="{{ setting('ioretaxrate', true) }}"/>
+                        <input class="form-control" type="number" name="ioretaxmodifier" id="ioretaxmodifier"
+                               value="{{ setting('ioretaxmodifier', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="ibountytaxrate">Bounty TAX Rate</label>
+                    <label for="ibountytaxmodifier">Bounty Tax Modifier</label>
                     <div class="d-flex flex-row align-items-baseline">
-                        <input class="form-control" type="number" name="ibountytaxrate" id="ibountytaxrate"
-                               value="{{ setting('ibountytaxrate', true) }}"/>
+                        <input class="form-control" type="number" name="ibountytaxmodifier" id="ibountytaxmodifier"
+                               value="{{ setting('ibountytaxmodifier', true) }}"/>
                         <div class="pl-2">%</div>
                     </div>
                 </div>
@@ -94,6 +84,7 @@
                 </div>
 
                 <hr/>
+
                 <h4>Valuation of Ore</h4>
 
                 <div class="form-group">
@@ -105,14 +96,16 @@
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pricevalue" id="pricevalue2" value="m" checked>
+                            <input class="form-check-input" type="radio" name="pricevalue" id="pricevalue2" value="m"
+                                   checked>
                             <label class="form-check-label" for="pricevalue2">
                                 Value at Mineral Price
                             </label>
                         </div>
                     @else
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pricevalue" id="pricevalue1" value="o" checked>
+                            <input class="form-check-input" type="radio" name="pricevalue" id="pricevalue1" value="o"
+                                   checked>
                             <label class="form-check-label" for="pricevalue1">
                                 Value at Ore Price
                             </label>
@@ -126,6 +119,72 @@
                     @endif
                 </div>
 
+                <hr>
+
+                <h4>Ore Tax</h4>
+
+                <div class="form-group">
+                    <label for="r64taxmodifier">R64 Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="r64taxmodifier" id="r64taxmodifier"
+                               value="{{ $ore_tax->firstWhere("group_id",1923)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="r32taxmodifier">R32 Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="r32taxmodifier" id="r32taxmodifier"
+                               value="{{ $ore_tax->firstWhere("group_id",1922)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="r16taxmodifier">R16 Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="r16taxmodifier" id="r16taxmodifier"
+                               value="{{ $ore_tax->firstWhere("group_id",1921)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="r8taxmodifier">R8 Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="r8taxmodifier" id="r8taxmodifier"
+                               value="{{ $ore_tax->firstWhere("group_id",1920)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="r4taxmodifier">R4 Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="r4taxmodifier" id="r4taxmodifier"
+                               value="{{ $ore_tax->firstWhere("group_id",1884)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gastax">Gas Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="gastax" id="gastax"
+                               value="{{ $ore_tax->firstWhere("group_id",711)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="oretaxrate">Other Ores Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="oretaxrate" id="oretaxrate" size="4"
+                               value="{{ setting('oretaxrate', true) }}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
 
             </div>
 

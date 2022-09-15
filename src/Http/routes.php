@@ -7,13 +7,7 @@ Route::group([
 ], function () {
     Route::get('/', [
         'as' => 'billing.view',
-        'uses' => 'BillingController@getLiveBillingView',
-        'middleware' => 'can:billing.view'
-    ]);
-
-    Route::get('/alliance/{alliance_id}', [
-        'as' => 'billing.allianceview',
-        'uses' => 'BillingController@getLiveBillingView',
+        'uses' => 'BillingController@showCurrentBill',
         'middleware' => 'can:billing.view'
     ]);
 
@@ -29,19 +23,13 @@ Route::group([
         'middleware' => 'can:billing.settings'
     ]);
 
-    Route::get('/getindbilling/{id}', [
-        'as' => 'billing.getindbilling',
-        'uses' => 'BillingController@getUserBilling',
-        'middleware' => 'can:billing.view'
-    ]);
-
-    Route::get('/pastbilling/{year}/{month}', [
+    Route::get('/past/{year}/{month}', [
         'as' => 'billing.pastbilling',
-        'uses' => 'BillingController@previousBillingCycle',
+        'uses' => 'BillingController@showBill',
         'middleware' => 'can:billing.view'
     ]);
 
-    Route::get('/getindpastbilling/{id}/{year}/{month}', [
+    Route::get('/character/{id}/{year}/{month}', [
         'as' => 'billing.getindbilling',
         'uses' => 'BillingController@getPastUserBilling',
         'middleware' => 'can:billing.view'

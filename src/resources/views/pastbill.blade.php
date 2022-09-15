@@ -30,10 +30,7 @@
                         <thead>
                             <tr>
                                 <th>Corporation</th>
-                                <th>Mined Amount</th>
-                                <th>Percentage of Market Value</th>
-                                <th>Adjusted Value</th>
-                                <th>Tax Rate</th>
+                                <th>Mined Amount (adjusted)</th>
                                 <th>Tax Owed</th>
                             </tr>
                         </thead>
@@ -41,11 +38,8 @@
                             @foreach($stats as $row)
                                 <tr>
                                     <td>{{ $row->corporation->name }}</td>
-                                    <td>{{ number_format($row->mining_bill, 2) }}</td>
-                                    <td>{{ $row->mining_modifier }}%</td>
-                                    <td>{{ number_format(($row->mining_bill * ($row->mining_modifier / 100)),2) }}</td>
-                                    <td>{{ $row->mining_taxrate }}%</td>
-                                    <td>{{ number_format((($row->mining_bill * ($row->mining_modifier / 100)) * ($row->mining_taxrate / 100)),2) }}</td>
+                                    <td>{{ number_format($row->mining_total, 2) }}</td>
+                                    <td>{{ number_format($row->mining_tax) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -65,7 +59,6 @@
                             <tr>
                                 <th>Corporation</th>
                                 <th>Total Bounties</th>
-                                <th>Tax Rate</th>
                                 <th>Tax Owed</th>
                             </tr>
                         </thead>
@@ -74,9 +67,8 @@
                                 <tr>
 
                                     <td>{{ $row->corporation->name }}</td>
-                                    <td>{{ number_format($row->pve_bill, 2) }}</td>
-                                    <td>{{ $row->pve_taxrate }}%</td>
-                                    <td>{{ number_format(($row->pve_bill * ($row->pve_taxrate / 100)),2) }}</td>
+                                    <td>{{ number_format($row->pve_total, 2) }}</td>
+                                    <td>{{ number_format($row->pve_tax,2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -104,8 +96,6 @@
                         <tr>
                             <th>Character Name</th>
                             <th>Mining Amount</th>
-                            <th>Market Modifier</th>
-                            <th>Mining Tax</th>
                             <th>Tax Due</th>
                         </tr>
                         </thead>
@@ -165,7 +155,7 @@
                 $.ajax({
                     headers: function () {
                     },
-                    url: "/billing/getindpastbilling/" + id + "/" + year + "/" + month,
+                    url: "/billing/character/" + id + "/" + year + "/" + month,
                     type: "GET",
                     dataType: 'json',
                     timeout: 10000
@@ -174,9 +164,7 @@
                         table.clear();
                         for (var chars in result) {
                             const name = result[chars].character.name || "{{ trans('web::seat.unknown') }}"
-                            table.row.add(['<a href="/characters/'+ result[chars].character_id +'/mining-ledger">'+name+'</a>', (new Intl.NumberFormat('en-US').format(result[chars].mining_bill)),
-                                (result[chars].mining_modifier) + "%", (result[chars].mining_taxrate) + "%",
-                                (new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(result[chars].mining_bill * (result[chars].mining_modifier / 100) * (result[chars].mining_taxrate / 100))) + " ISK"]);
+                            table.row.add(['<a href="/characters/'+ result[chars].character_id +'/mining-ledger">'+name+'</a>', new Intl.NumberFormat('en-US').format(result[chars].mining_total)+ " ISK", new Intl.NumberFormat('en-US').format(result[chars].mining_tax)+" ISK"]);
                         }
                         table.draw();
                         ids_to_names();

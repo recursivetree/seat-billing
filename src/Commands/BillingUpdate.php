@@ -57,43 +57,58 @@ class BillingUpdate extends Command
                 ->get();
 
 
-            if ((count($bill) == 0) || ($this->option('force') == true)) {
-                $rates = $this->getCorporateTaxRate($corp->corporation_id);
+            if ($bill===null || $this->option('force')) {
+                $isIncentivisedRatesEligible = $this->isEligibleForIncentivesRates($corp->corporation_id);
 
                 $bill = new CorporationBill();
                 $bill->corporation_id = $corp->corporation_id;
                 $bill->year = $year;
                 $bill->month = $month;
-                $bill->mining_bill = $this->getMiningTotal($corp->corporation_id, $year, $month);
 
+                //mining data
+                $mining_data = $this->getCorporationMiningTotal($corp->corporation_id, $year, $month);
+                $bill->mining_total = $mining_data["mining_total"];
+                $bill->mining_tax = $mining_data["mining_tax"];
+
+                //bounty data
                 $bounties = 0;
                 $pve_data = $this->getBountyTotal($year, $month)->where('corporation_wallet_journals.corporation_id',$corp->corporation_id)->first();
                 if ($pve_data){
                     $bounties = $pve_data->bounties;
                 }
-                $bill->pve_bill = $bounties;
+                $bill->pve_total = $bounties;
+                $pve_tax = (setting('bountytaxrate', true) ?? 0) / 100;
+                if($isIncentivisedRatesEligible){
+                    $pve_tax = $pve_tax * (setting("ibountytaxmodifier",true) ?? 100) / 100;
+                }
+                $bill->pve_tax = $bounties * $pve_tax;
 
-                $bill->mining_taxrate = $rates['taxrate'];
-                $bill->mining_modifier = $rates['modifier'];
-                $bill->pve_taxrate = $rates['pve'];
+                //TODO remove when removing it from the db
+                $bill->mining_taxrate = 0; // legacy fields
+                $bill->mining_modifier = 0; // legacy fields
+                $bill->pve_taxrate = $pve_tax * 10;
+
+                //save corporation bill
                 $bill->save();
-            
-                $summary = $this->getMainsBilling($corp->corporation_id, $year, $month);
 
+                //character bill
+                $summary = $this->getMainsBilling($corp->corporation_id, $year, $month);
                 foreach ($summary as $character) {
                     $bill = CharacterBill::where('character_id', $character['id'])
                         ->where('year', $year)
                         ->where('month', $month)
                         ->get();
-                    if ((count($bill) == 0) || ($this->option('force') == true)) {
+
+                    if ($bill===null || ($this->option('force') == true)) {
                         $bill = new CharacterBill();
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;
                         $bill->year = $year;
                         $bill->month = $month;
-                        $bill->mining_bill = $character['amount'];
-                        $bill->mining_taxrate = ($character['taxrate'] * 100);
-                        $bill->mining_modifier = $rates['modifier'];
+                        $bill->mining_total = $character['mining_total'];
+                        $bill->mining_tax = $character['mining_tax'];
+                        $bill->mining_modifier = 0;//legacy
+                        $bill->mining_taxrate = 0;//legacy
                         $bill->save();
                     }
                 }
