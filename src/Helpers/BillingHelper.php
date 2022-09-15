@@ -21,10 +21,10 @@ trait BillingHelper
 
         if($this->isEligibleForIncentivesRates($corporation_id)){
             $incentiveModifier =  setting("ioretaxmodifier",true) ?? 100;
-            $valuation = setting('ioremodifier', true);
+            $valuation = setting('ioremodifier', true) ?? 100;
         } else {
             $incentiveModifier = 100;
-            $valuation = setting('oremodifier', true);
+            $valuation = setting('oremodifier', true) ?? 100;
         }
 
         if (setting("pricevalue", true) == "m") {
