@@ -203,31 +203,74 @@
         </div>
         <div class="card-body">
             <div class="col-sm-12">
-                <p><label>Ore value modifier:</label> This is a modifier used on the base costs of the ore/minerals/goo
-                    to adjust for inflation/deflation during the billing period. Normally this is 90-95% </p>
+                <label>Ore value modifier:</label>
+                <p>
+                    This is a modifier used on the base costs of the ore/minerals/goo
+                    to adjust for inflation/deflation during the billing period. Normally this is 90-95%
+                </p>
             </div>
             <div class="col-sm-12">
-                <p><label>Ore Tax Rate:</label> Rate to tax on value of the mined materials. </p>
-            </div>
-            <div class="col-sm-12">
-                <p><label>Ore Refining Rate:</label> This should be the max refine amount in your area. Max rates with
+                <label>Ore Refining Rate:</label>
+                <p>
+                    This should be the max refine amount in your area. Max rates with
                     RX-804 implant, level V skills, and a T2 Rigged Tatara is 89.4%. Adjust this as you see fit, but I
-                    recommend using the maximum rate available to your members in your area of space.</p>
+                    recommend using the maximum rate available to your members in your area of space.
+                </p>
             </div>
             <div class="col-sm-12">
-                <p><label>Bounty Tax Rate:</label> Rate of ratting bounties to tax. Usually 5-10%</p>
+                <label>Bounty Tax Rate:</label>
+                <p>
+                    Rate of ratting bounties to tax. Usually 5-10%
+                </p>
             </div>
             <div class="col-sm-12">
-                <p><label>Incentivised Rates:</label> Incentivised rates are on a per-corporation basis only. These are
-                    discounted rates based on the number of members in the corp have signed up on Seat, including all
-                    alts. If they're not signed up on SeAT, the alliance is not seeing their mining amounts, therefore,
-                    they get higher tax rates.</p>
+                <label>Incentivised Settings:</label>
+                <p>Incentivised modifiers are on a per-corporation basis only.
+                    These are modifiers applied to corps where at least a certain number of members (including alts)
+                    have registered on SeAT. If they're not signed up on SeAT, the alliance is not seeing their mining
+                    amounts and missing on tax, therefore the corporation gets higher tax rates.
+                </p>
             </div>
             <div class="col-sm-12">
-                <p><label>Valuation of Ore:</label> Value of ore can be determined with two methods: By ore type OR By
+                <label>Incentivised Ore Value Modifier:</label>
+                <p>
+                    Ore Value Modifier to use for corps with incentivised rates.
+                </p>
+            </div>
+            <div class="col-sm-12">
+                <label>Incentivised Ore Tax Modifier:</label>
+                <p>
+                    This modifier is applied to the normal tax. With your normal tax at 5 % and the incentivised ore tax
+                    modifier at 50%, your members will have to pay 2.5% tax
+                </p>
+            </div>
+            <div class="col-sm-12">
+                <label>Incentivised Bounty Tax Modifier:</label>
+                <p>
+                    This modifier is applied to the normal tax. With your normal tax at 5 % and the incentivised ore tax
+                    modifier at 50%, your members will have to pay 2.5% tax
+                </p>
+            </div>
+            <div class="col-sm-12">
+                <label>Rates Threshold:</label>
+                <p>
+                    When more than x% of the members of a corp are registered on SeAT, the incentivised settings apply.
+                </p>
+            </div>
+            <div class="col-sm-12">
+                <label>Valuation of Ore:</label>
+                <p>
+                    Value of ore can be determined with two methods: By ore type OR By
                     mineral content. If you are moon mining, it's better to use mineral content as it's more accurate as
                     Moon Goo is rarely sold by the raw ore, but more often as refined products. This keeps the moon
-                    mining honest.</p>
+                    mining honest.
+                </p>
+            </div>
+            <div class="col-sm-12">
+                <label>Ore Tax:</label>
+                <p>
+                    You can specify separate taxes for each category of ore.
+                </p>
             </div>
         </div>
     </div>
