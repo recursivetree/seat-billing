@@ -31,7 +31,7 @@ Route::group([
 
     Route::get('/character/{id}/{year}/{month}', [
         'as' => 'billing.getindbilling',
-        'uses' => 'BillingController@getPastUserBilling',
+        'uses' => 'BillingController@getCharacterBill',
         'middleware' => 'can:billing.view'
     ]);
 });

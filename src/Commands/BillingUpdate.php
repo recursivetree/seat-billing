@@ -95,7 +95,7 @@ class BillingUpdate extends Command
                 $bill->save();
 
                 //character bill
-                $summary = $this->getMainsBilling($corp->corporation_id, $year, $month);
+                $summary = $this->getUserBilling($corp->corporation_id, $year, $month);
                 foreach ($summary as $character) {
                     $bill = CharacterBill::where('character_id', $character['id'])
                         ->where('year', $year)

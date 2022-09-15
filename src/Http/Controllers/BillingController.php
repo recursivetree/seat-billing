@@ -17,36 +17,6 @@ class BillingController extends Controller
 {
     use BillingHelper;
 
-    public function getLiveBillingView(int $alliance_id = 0)
-    {
-        $start_date = carbon()->startOfMonth()->toDateString();
-        $end_date = carbon()->endOfMonth()->toDateString();
-
-        $stats = collect();
-
-        $alliances = Alliance::whereIn('alliance_id', CorporationInfo::select('alliance_id'))->orderBy('name')->get();
-
-        $dates = $this->getCorporationBillingMonths();
-
-        return view('billing::summary', compact('alliances', 'stats', 'dates'));
-    }
-
-    private function getCorporations()
-    {
-        if (auth()->user()->admin) {
-            $corporations = CorporationInfo::orderBy('name')->get();
-        } else {
-            $corpids = CharacterInfo::whereIn('character_id', auth()->user()->associatedCharacterIds())
-                ->select('corporation_id')
-                ->get()
-                ->toArray();
-
-            $corporations = CorporationInfo::whereIn('corporation_id', $corpids)->orderBy('name')->get();
-        }
-
-        return $corporations;
-    }
-
     public function getBillingSettings()
     {
         $ore_tax = OreTax::all();
@@ -92,19 +62,9 @@ class BillingController extends Controller
         return redirect()->route("billing.settings")->with('success', 'Billing Settings have successfully been updated.');
     }
 
-    public function getUserBilling($corporation_id)
+    public function getCharacterBill($corporation_id, $year, $month)
     {
-
-        $summary = $this->getMainsBilling($corporation_id);
-
-        //dd($summary);
-
-        return $summary;
-    }
-
-    public function getPastUserBilling($corporation_id, $year, $month)
-    {
-        $summary = $this->getPastMainsBillingByMonth($corporation_id, $year, $month);
+        $summary = $this->getCharacterBillByMonth($corporation_id, $year, $month);
 
         return $summary;
     }
@@ -123,6 +83,6 @@ class BillingController extends Controller
         $stats = $this->getCorporationBillByMonth($year, $month)->sortBy('corporation.name');
         $dates = $this->getCorporationBillingMonths();
 
-        return view('billing::pastbill', compact('stats', 'dates', 'year', 'month'));
+        return view('billing::bill', compact('stats', 'dates', 'year', 'month'));
     }
 }
