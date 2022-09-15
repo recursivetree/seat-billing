@@ -37,9 +37,12 @@ class BillingUpdate extends Command
         if (($this->argument('month')) && ($this->argument('year'))) {
             $year = $this->argument('year');
             $month = $this->argument('month');
-        } 
+        }
 
-        if ($this->option('force') == true) {
+        // force update when no month or year is specified or when the force option is given
+        $force = $this->option('force') || ($this->argument("year")===null && $this->argument("month")===null);
+
+        if ($force) {
             CorporationBill::where('month', $month)
                 ->where('year', $year)
                 ->delete();
@@ -57,7 +60,7 @@ class BillingUpdate extends Command
                 ->get();
 
 
-            if ($bill===null || $this->option('force')) {
+            if ($bill===null || $force) {
                 $isIncentivisedRatesEligible = $this->isEligibleForIncentivesRates($corp->corporation_id);
 
                 $bill = new CorporationBill();
@@ -99,7 +102,7 @@ class BillingUpdate extends Command
                         ->where('month', $month)
                         ->get();
 
-                    if ($bill===null || ($this->option('force') == true)) {
+                    if ($bill===null || $force) {
                         $bill = new CharacterBill();
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;

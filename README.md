@@ -9,7 +9,7 @@ See the instruction over at the [seat documentation](https://eveseat.github.io/d
 
 The package name is `recursivetree/seat-billing`.
 
-You should schedule a job to run Monthly called 'billing:update'.  This will calculate the bills for the corps each month.
+You should schedule a job running 'billing:update' as often as you want the live data to be updated.
 
 Good luck, and Happy Hunting!!  o7
 
