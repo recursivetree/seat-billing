@@ -178,6 +178,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="icetax">Ice Tax</label>
+                    <div class="d-flex flex-row align-items-baseline">
+                        <input class="form-control" type="number" name="icetax" id="icetax"
+                               value="{{ $ore_tax->firstWhere("group_id",465)->tax_rate ?? 0}}"/>
+                        <div class="pl-2">%</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="oretaxrate">Other Ores Tax</label>
                     <div class="d-flex flex-row align-items-baseline">
                         <input class="form-control" type="number" name="oretaxrate" id="oretaxrate" size="4"

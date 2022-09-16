@@ -32,15 +32,16 @@ class BillingController extends Controller
             'oretaxrate'        => 'required|integer|min:0|max:200',
             'bountytaxrate'     => 'required|integer|min:0|max:200',
             'ioremodifier'      => 'required|integer|min:0|max:200',
-            'ioretaxmodifier'       => 'required|integer|min:0|max:200',
-            'ibountytaxmodifier'    => 'required|integer|min:0|max:200',
+            'ioretaxmodifier'   => 'required|integer|min:0|max:200',
+            'ibountytaxmodifier'=> 'required|integer|min:0|max:200',
             'irate'             => 'required|integer|min:0|max:200',
             'r64taxmodifier'    => 'required|integer|min:0',
             'r16taxmodifier'    => 'required|integer|min:0',
             'r32taxmodifier'    => 'required|integer|min:0',
             'r8taxmodifier'     => 'required|integer|min:0',
             'r4taxmodifier'     => 'required|integer|min:0',
-            'gastax'     => 'required|integer|min:0',
+            'gastax'            => 'required|integer|min:0',
+            'icetax'            => 'required|integer|min:0',
         ]);
 
         setting(["oremodifier", intval($request->oremodifier)], true);
@@ -53,7 +54,7 @@ class BillingController extends Controller
         setting(["irate", intval($request->irate)], true);
         setting(["pricevalue", $request->pricevalue], true);
 
-        OreTax::whereIn("group_id",[1923,1922,1921,1920,1884,711])->delete();
+        OreTax::whereIn("group_id",[1923,1922,1921,1920,1884,711, 465])->delete();
 
         $ore = new OreTax;
         $ore->group_id = 1923;
@@ -83,6 +84,11 @@ class BillingController extends Controller
         $ore = new OreTax;
         $ore->group_id = 711;
         $ore->tax_rate = intval($request->gastax);
+        $ore->save();
+
+        $ore = new OreTax;
+        $ore->group_id = 465;
+        $ore->tax_rate = intval($request->icetax);
         $ore->save();
 
 //        OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
