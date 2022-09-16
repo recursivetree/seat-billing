@@ -54,49 +54,13 @@ class BillingController extends Controller
         setting(["irate", intval($request->irate)], true);
         setting(["pricevalue", $request->pricevalue], true);
 
-        OreTax::whereIn("group_id",[1923,1922,1921,1920,1884,711, 465])->delete();
-
-        $ore = new OreTax;
-        $ore->group_id = 1923;
-        $ore->tax_rate = intval($request->r64taxmodifier);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 1922;
-        $ore->tax_rate = intval($request->r32taxmodifier);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 1921;
-        $ore->tax_rate = intval($request->r16taxmodifier);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 1920;
-        $ore->tax_rate = intval($request->r8taxmodifier);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 1884;
-        $ore->tax_rate = intval($request->r4taxmodifier);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 711;
-        $ore->tax_rate = intval($request->gastax);
-        $ore->save();
-
-        $ore = new OreTax;
-        $ore->group_id = 465;
-        $ore->tax_rate = intval($request->icetax);
-        $ore->save();
-
-//        OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
-//        OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);
-//        OreTax::updateOrCreate(["group_id"=>1921],["tax_rate"=>intval($request->r16taxmodifier)]);
-//        OreTax::updateOrCreate(["group_id"=>1920],["tax_rate"=>intval($request->r8taxmodifier)]);
-//        OreTax::updateOrCreate(["group_id"=>1884],["tax_rate"=>intval($request->r4taxmodifier)]);
-//        OreTax::updateOrCreate(["group_id"=>711],["tax_rate"=>intval($request->gastax)]);
+        OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1921],["tax_rate"=>intval($request->r16taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1920],["tax_rate"=>intval($request->r8taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>1884],["tax_rate"=>intval($request->r4taxmodifier)]);
+        OreTax::updateOrCreate(["group_id"=>711],["tax_rate"=>intval($request->gastax)]);
+        OreTax::updateOrCreate(["group_id"=>465],["tax_rate"=>intval($request->icetax)]);
 
         return redirect()->route("billing.settings")->with('success', 'Billing Settings have successfully been updated.');
     }

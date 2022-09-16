@@ -49,7 +49,8 @@ class ChangeBillFormat extends Migration
 
 
         Schema::create("seat_billing_ore_tax", function (Blueprint $table){
-           $table->bigInteger("group_id")->primary();
+           $table->bigIncrements("id");
+           $table->bigInteger("group_id")->index();
            $table->smallInteger("tax_rate");
         });
 
@@ -78,6 +79,8 @@ class ChangeBillFormat extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists("seat_billing_ore_tax");
+
         Schema::table('seat_billing_corp_bill', function (Blueprint $table) {
             //rename+change pve tables
             $table->renameColumn("pve_total","pve_bill");
@@ -93,7 +96,5 @@ class ChangeBillFormat extends Migration
             $table->renameColumn("mining_total", "mining_bill");
             $table->dropColumn("mining_tax");
         });
-
-        Schema::dropIfExists("seat_billing_ore_tax");
     }
 }

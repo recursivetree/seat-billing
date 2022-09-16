@@ -12,8 +12,9 @@ class OreTax extends Model
 
     public $timestamps = false;
 
-    protected $primaryKey = 'tax_rate';
-
+//    protected $primaryKey = 'tax_rate';
+//
+//    public $incrementing = false;
 
     protected $table = 'seat_billing_ore_tax';
 }
