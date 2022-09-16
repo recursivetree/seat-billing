@@ -30,6 +30,7 @@
                         <thead>
                             <tr>
                                 <th>Corporation</th>
+                                <th>Alliance</th>
                                 <th>Mined Amount (adjusted)</th>
                                 <th>Tax Owed</th>
                             </tr>
@@ -37,7 +38,8 @@
                         <tbody>
                             @foreach($stats as $row)
                                 <tr>
-                                    <td>{{ $row->corporation->name }}</td>
+                                    <td>@include("web::partials.corporation", ["corporation"=>$row->corporation])</td>
+                                    <td>@include("web::partials.alliance", ["alliance"=>$row->corporation->alliance])</td>
                                     <td>{{ number_format($row->mining_total, 2) }}</td>
                                     <td>{{ number_format($row->mining_tax) }}</td>
                                 </tr>
@@ -65,6 +67,7 @@
                         <thead>
                             <tr>
                                 <th>Corporation</th>
+                                <th>Alliance</th>
                                 <th>Total Bounties</th>
                                 <th>Tax Owed</th>
                             </tr>
@@ -72,8 +75,8 @@
                         <tbody>
                             @foreach($stats as $row)
                                 <tr>
-
-                                    <td>{{ $row->corporation->name }}</td>
+                                    <td>@include("web::partials.corporation", ["corporation"=>$row->corporation])</td>
+                                    <td>@include("web::partials.alliance", ["alliance"=>$row->corporation->alliance])</td>
                                     <td>{{ number_format($row->pve_total, 2) }}</td>
                                     <td>{{ number_format($row->pve_tax,2) }}</td>
                                 </tr>

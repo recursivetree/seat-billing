@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
+use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Sde\InvGroup;
@@ -112,7 +113,10 @@ class BillingController extends Controller
     public function showBill($year, $month)
     {
 
-        $stats = $this->getCorporationBillByMonth($year, $month)->sortBy('corporation.name');
+        $stats =  CorporationBill::with('corporation.alliance')
+            ->where("month", $month)
+            ->where("year", $year)
+            ->get();
         $dates = $this->getCorporationBillingMonths();
 
         return view('billing::bill', compact('stats', 'dates', 'year', 'month'));
