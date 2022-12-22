@@ -76,10 +76,13 @@ class UpdateBills implements ShouldQueue
 
                 //bounty data
                 $bounties = 0;
-                $pve_data = $this->getBountyTotal($year, $month)->where('corporation_wallet_journals.corporation_id',$corp->corporation_id)->first();
-                if ($pve_data){
+                $pve_data = $this->getBountyTotal($year, $month)
+                    ->where('corporation_wallet_journals.corporation_id',$corp->corporation_id)
+                    ->first();
+                if ($pve_data && $pve_data->bounties){
                     $bounties = $pve_data->bounties;
                 }
+
                 $bill->pve_total = $bounties;
                 $pve_tax = (setting('bountytaxrate', true) ?? 0) / 100;
                 if($isIncentivisedRatesEligible){
