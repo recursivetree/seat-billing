@@ -40,8 +40,8 @@
                                 <tr>
                                     <td>@include("web::partials.corporation", ["corporation"=>$row->corporation])</td>
                                     <td>@include("web::partials.alliance", ["alliance"=>$row->corporation->alliance])</td>
-                                    <td>{{ number_format($row->mining_total, 2) }}</td>
-                                    <td>{{ number_format($row->mining_tax) }}</td>
+                                    <td data-sort="{{$row->mining_total}}">{{ number_format($row->mining_total, 2) }}</td>
+                                    <td data-sort="{{$row->mining_tax}}">{{ number_format($row->mining_tax) }}</td>
                                 </tr>
                             @endforeach
                             @if($stats->isEmpty())
@@ -77,8 +77,8 @@
                                 <tr>
                                     <td>@include("web::partials.corporation", ["corporation"=>$row->corporation])</td>
                                     <td>@include("web::partials.alliance", ["alliance"=>$row->corporation->alliance])</td>
-                                    <td>{{ number_format($row->pve_total, 2) }}</td>
-                                    <td>{{ number_format($row->pve_tax,2) }}</td>
+                                    <td data-sort="{{$row->pve_total}}">{{ number_format($row->pve_total, 2) }}</td>
+                                    <td data-sort="{{$row->pve_tax}}">{{ number_format($row->pve_tax,2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -174,7 +174,9 @@
                         table.clear();
                         for (var chars in result) {
                             const name = result[chars].character.name || "{{ trans('web::seat.unknown') }}"
-                            table.row.add(['<a href="/characters/'+ result[chars].character_id +'/mining-ledger">'+name+'</a>', new Intl.NumberFormat('en-US').format(result[chars].mining_total)+ " ISK", new Intl.NumberFormat('en-US').format(result[chars].mining_tax)+" ISK"]);
+                            const tr = document.createElement("tr")
+                            tr.innerHTML = '<td><a href="/characters/'+ result[chars].character_id +'/mining-ledger">'+name+'</a></td><td data-sort="'+result[chars].mining_total+'">'+ new Intl.NumberFormat('en-US').format(result[chars].mining_total)+ ' ISK</td><td data-sort="'+result[chars].mining_tax+'">'+ new Intl.NumberFormat('en-US').format(result[chars].mining_tax)+" ISK</td>"
+                            table.row.add(tr);
                         }
                         table.draw();
                         ids_to_names();
