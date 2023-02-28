@@ -44,13 +44,6 @@
                                     <td data-sort="{{$row->mining_tax}}">{{ number_format($row->mining_tax) }}</td>
                                 </tr>
                             @endforeach
-                            @if($stats->isEmpty())
-                                <tr>
-                                    <td colspan="3">
-                                        There is nothing to show here. Please make sure to schedule the <code>billing:update:live</code> job on a <b>daily</b> schedule to get daily updates. You can also manually trigger an update by running <code>php artisan billing:update:live</code>.
-                                    </td>
-                                </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -110,6 +103,12 @@
                         </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <!-- There need to be dumy rows when creating the table or it won't work for some reason https://datatables.net/forums/discussion/42979/row-add-node-how-to-set-data-sort-->
+                                <td></td>
+                                <td data-sort="0"></td>
+                                <td data-sort="0"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -172,10 +171,10 @@
                 }).done(function (result) {
                     if (result) {
                         table.clear();
-                        for (var chars in result) {
-                            const name = result[chars].character.name || "{{ trans('web::seat.unknown') }}"
+                        for (var char of result) {
+                            const name = char.character ? char.character.name : "{{ trans('web::seat.unknown') }}"
                             const tr = document.createElement("tr")
-                            tr.innerHTML = '<td><a href="/characters/'+ result[chars].character_id +'/mining-ledger">'+name+'</a></td><td data-sort="'+result[chars].mining_total+'">'+ new Intl.NumberFormat('en-US').format(result[chars].mining_total)+ ' ISK</td><td data-sort="'+result[chars].mining_tax+'">'+ new Intl.NumberFormat('en-US').format(result[chars].mining_tax)+" ISK</td>"
+                            tr.innerHTML = '<td><a href="/characters/'+ char.character_id +'/mining-ledger">'+name+'</a></td><td data-sort="'+char.mining_total+'">'+ new Intl.NumberFormat('en-US').format(char.mining_total)+ ' ISK</td><td data-sort="'+char.mining_tax+'">'+ new Intl.NumberFormat('en-US').format(char.mining_tax)+" ISK</td>"
                             table.row.add(tr);
                         }
                         table.draw();

@@ -130,10 +130,6 @@ trait BillingHelper
             ->get();
     }
 
-    private function getCorporationBillByMonth($year, $month)
-    {
-
-    }
 
     private function getCharacterBillByMonth($corporation_id, $year, $month)
     {
