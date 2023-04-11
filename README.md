@@ -11,5 +11,8 @@ The package name is `recursivetree/seat-billing`.
 
 You should schedule a job running 'billing:update' as often as you want the live data to be updated.
 
+## Known issues
+* Characters changing corporations causes all kind of issues.
+
 Good luck, and Happy Hunting!!  o7
 
