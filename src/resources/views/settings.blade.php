@@ -88,6 +88,7 @@
                 <h4>Valuation of Ore</h4>
 
                 <div class="form-group">
+                    <label>Valuation Mode</label>
                     @if (setting('pricevalue', true) == "m")
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="pricevalue" id="pricevalue1" value="o">
@@ -117,6 +118,34 @@
                             </label>
                         </div>
                     @endif
+                </div>
+
+                <div class="form-group">
+                    <label>Price Source</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="pricesource" id="pricesource1" value="sell_price" @checked(setting("price_source", true)==="sell_price")>
+                        <label class="form-check-label" for="pricesource1">
+                            Value at Sell Price
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="pricesource" id="pricesource2" value="buy_price" @checked(setting("price_source", true)==="buy_price")>
+                        <label class="form-check-label" for="pricesource2">
+                            Value at Buy Price
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="pricesource" id="pricesource3" value="adjusted_price" @checked(setting("price_source", true)==="adjusted_price")>
+                        <label class="form-check-label" for="pricesource3">
+                            Value at CCP Price
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="pricesource" id="pricesource4" value="average_price" @checked(setting("price_source", true)==="average_price")>
+                        <label class="form-check-label" for="pricesource4">
+                            Value at CCP Market Price (old default)
+                        </label>
+                    </div>
                 </div>
 
                 <hr>

@@ -25,6 +25,8 @@ class BillingController extends Controller
         return view('billing::settings', compact("ore_tax"));
     }
 
+    const ALLOWED_PRICE_SOURCES = ["sell_price","buy_price","adjusted_price","average_price"];
+
     public function saveBillingSettings(Request $request)
     {
         $request->validate([
@@ -42,6 +44,7 @@ class BillingController extends Controller
             'r4taxmodifier'     => 'required|integer|min:0',
             'gastax'            => 'required|integer|min:0',
             'icetax'            => 'required|integer|min:0',
+            'pricesource'       => 'required|string|in:'. implode(",",self::ALLOWED_PRICE_SOURCES),
         ]);
 
         setting(["oremodifier", intval($request->oremodifier)], true);
@@ -53,6 +56,7 @@ class BillingController extends Controller
         setting(["ibountytaxmodifier", intval($request->ibountytaxmodifier)], true);
         setting(["irate", intval($request->irate)], true);
         setting(["pricevalue", $request->pricevalue], true);
+        setting(["price_source", $request->pricesource], true);
 
         OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
         OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);

@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Helpers;
 
+use Denngarr\Seat\Billing\Http\Controllers\BillingController;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +28,17 @@ trait BillingHelper
             $valuation = setting('oremodifier', true) ?? 100;
         }
 
+        $price_source = setting("price_source",true);
+        if($price_source === null || !in_array($price_source,BillingController::ALLOWED_PRICE_SOURCES)){
+            // old default value
+            $price_source = "average_price";
+        }
+
         if (setting("pricevalue", true) == "m") {
             $ledger = DB::table('character_minings')
                 ->select('users.main_character_id','character_infos.name')
-                ->selectRaw('SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.average_price * (?/100)) as mining_value', [$refineRate,$valuation])
-                ->selectRaw('SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.average_price * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax', [$refineRate,$valuation,$miningTax,$incentiveModifier])
+                ->selectRaw("SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.$price_source * (?/100)) as mining_value", [$refineRate,$valuation])
+                ->selectRaw("SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.$price_source * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax", [$refineRate,$valuation,$miningTax,$incentiveModifier])
                 ->leftJoin('invTypeMaterials', 'character_minings.type_id', 'invTypeMaterials.typeID')
                 ->join('market_prices', DB::RAW('IFNULL(invTypeMaterials.materialTypeID,character_minings.type_id)'), 'market_prices.type_id')
                 ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
@@ -48,8 +55,8 @@ trait BillingHelper
         } else {
             $ledger = DB::table('character_minings')
                 ->select('users.main_character_id','character_infos.name')
-                ->selectRaw('SUM(character_minings.quantity * market_prices.average_price * (?/100)) as mining_value',[$valuation])
-                ->selectRaw('SUM(character_minings.quantity * market_prices.average_price * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax',[$valuation,$miningTax, $incentiveModifier])
+                ->selectRaw("SUM(character_minings.quantity * market_prices.$price_source * (?/100)) as mining_value",[$valuation])
+                ->selectRaw("SUM(character_minings.quantity * market_prices.$price_source * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax",[$valuation,$miningTax, $incentiveModifier])
                 ->join('market_prices', 'character_minings.type_id', 'market_prices.type_id')
                 ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
                 ->join('refresh_tokens','refresh_tokens.character_id','character_minings.character_id')

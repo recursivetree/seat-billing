@@ -37,6 +37,9 @@ class BillingUpdate extends Command
             $month = $this->argument('month');
         }
 
+        $year = intval($year);
+        $month = intval($month);
+
         if($this->option('now')){
             UpdateBills::dispatchNow($this->option('force'), $year, $month);
         } else {
