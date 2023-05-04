@@ -1,7 +1,7 @@
 # seat-billing
 A billing system for mining/PvE costs for corps/alliances.
 
-Thanks to denngarr for writing the original plugin. (And at the same time, what kind of mess did you create?)
+Thanks to dysath/denngarr for writing the original plugin. Development has been taken over by recursivetree from 13. February 2022. To find the applied changes, please consult the git history.
 
 ## Quick Installation:
 
