@@ -33,7 +33,7 @@ class BillingUpdateLive extends Command
         $month = date('n');
 
         if($this->option('now')){
-            UpdateBills::dispatchNow(true, $year, $month);
+            UpdateBills::dispatchSync(true, $year, $month);
         } else {
             UpdateBills::dispatch(true, $year, $month);
         }
