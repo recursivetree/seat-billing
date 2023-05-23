@@ -4,6 +4,7 @@ namespace Denngarr\Seat\Billing\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Seat\Eveapi\Models\Character\CharacterInfo;
+use Seat\Eveapi\Models\Corporation\CorporationInfo;
 
 class CharacterBill extends Model
 {
@@ -15,5 +16,9 @@ class CharacterBill extends Model
 
     public function character(){
         return $this->belongsTo(CharacterInfo::class,'character_id','character_id');
+    }
+
+    public function corporation(){
+        return $this->belongsTo(CorporationInfo::class,'corporation_id','corporation_id');
     }
 }

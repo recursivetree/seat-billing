@@ -2,15 +2,11 @@
 
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
+use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
 use Illuminate\Support\Facades\DB;
-use Seat\Eveapi\Models\Sde\InvGroup;
 use Seat\Web\Http\Controllers\Controller;
-use Seat\Eveapi\Models\Alliances\Alliance;
-use Seat\Eveapi\Models\Character\CharacterInfo;
-use Seat\Eveapi\Models\Corporation\CorporationInfo;
-use Denngarr\Seat\Billing\Validation\ValidateSettings;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 use Illuminate\Http\Request;
 
@@ -94,5 +90,18 @@ class BillingController extends Controller
         $dates = $this->getCorporationBillingMonths();
 
         return view('billing::bill', compact('stats', 'dates', 'year', 'month'));
+    }
+
+    public function getUserBill(){
+        $characters = auth()->user()->refresh_tokens()->pluck("character_id");
+
+        $months = CharacterBill::whereIn("character_id",$characters)
+            ->orderBy("character_id","ASC")
+            ->get()
+            ->groupBy(function ($bill){
+                return $bill->year * 100 + $bill->month;
+            });
+
+        return view("billing::userBill",compact("months"));
     }
 }

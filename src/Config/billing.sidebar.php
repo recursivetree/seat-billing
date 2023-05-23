@@ -19,6 +19,11 @@ return [
                 'route' => 'billing.settings',
                 'permission' => 'billing.settings',
             ],
+            'personal' => [
+                'name' => 'User',
+                'icon' => 'fas fa-user',
+                'route' => 'billing.userBill',
+            ]
         ],
     ],
 ];

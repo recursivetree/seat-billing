@@ -11,4 +11,5 @@ return [
     'summary-ind-mining'                   => 'Individual Mining',
     'pastbill'                             => 'Past Billing Invoices',
     'previousbill'                         => 'Previous Bills',
+    'user_bills'                           => 'User Bills'
 ];
