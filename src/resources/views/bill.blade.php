@@ -174,7 +174,7 @@
                         for (var char of result) {
                             const name = char.character ? char.character.name : "{{ trans('web::seat.unknown') }}"
                             const tr = document.createElement("tr")
-                            tr.innerHTML = '<td><a href="/characters/'+ char.character_id +'/mining-ledger">'+name+'</a></td><td data-sort="'+char.mining_total+'">'+ new Intl.NumberFormat('en-US').format(char.mining_total)+ ' ISK</td><td data-sort="'+char.mining_tax+'">'+ new Intl.NumberFormat('en-US').format(char.mining_tax)+" ISK</td>"
+                            tr.innerHTML = '<td><a href="/billing/user/character/'+ char.character_id +'#bills'+year.toString()+month.toString()+'">'+name+'</a></td><td data-sort="'+char.mining_total+'">'+ new Intl.NumberFormat('en-US').format(char.mining_total)+ ' ISK</td><td data-sort="'+char.mining_tax+'">'+ new Intl.NumberFormat('en-US').format(char.mining_tax)+" ISK</td>"
                             table.row.add(tr);
                         }
                         table.draw();

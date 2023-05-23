@@ -6,9 +6,11 @@ use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\RefreshToken;
 use Seat\Web\Http\Controllers\Controller;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 use Illuminate\Http\Request;
+use Seat\Web\Models\User;
 
 class BillingController extends Controller
 {
@@ -93,7 +95,15 @@ class BillingController extends Controller
     }
 
     public function getUserBill(){
-        $characters = auth()->user()->refresh_tokens()->pluck("character_id");
+        return $this->getUserBillByUserId(auth()->user());
+    }
+
+    public function getUserBillByCharacter($character_id){
+        return $this->getUserBillByUserId(RefreshToken::find($character_id)->user);
+    }
+
+    private function getUserBillByUserId($user){
+        $characters = $user->refresh_tokens()->pluck("character_id");
 
         $months = CharacterBill::whereIn("character_id",$characters)
             ->orderBy("character_id","ASC")

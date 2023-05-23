@@ -9,7 +9,7 @@
     @foreach($months as $month)
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">{{ date('Y-M', mktime(0,0,0, $month->first()->month, 1, $month->first()->year)) }}</h3>
+                <h3 class="card-title" id="bills{{$month->first()->year}}{{$month->first()->month}}">{{ date('Y-M', mktime(0,0,0, $month->first()->month, 1, $month->first()->year)) }}</h3>
             </div>
             <div class="card-body">
                     <table class="table DataTable table-hover table-striped">

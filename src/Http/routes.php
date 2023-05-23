@@ -35,8 +35,15 @@ Route::group([
         'middleware' => 'can:billing.view'
     ]);
 
-    Route::get('/userBill/', [
+    Route::get('/user', [
         'as' => 'billing.userBill',
         'uses' => 'BillingController@getUserBill',
+    ]);
+
+    //hardcoded route
+    Route::get('/user/character/{id}', [
+        'as' => 'billing.getUserBillByCharacter',
+        'uses' => 'BillingController@getUserBillByCharacter',
+        'middleware' => 'can:billing.view'
     ]);
 });
