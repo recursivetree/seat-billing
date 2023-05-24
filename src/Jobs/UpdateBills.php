@@ -116,6 +116,7 @@ class UpdateBills implements ShouldQueue
                         $bill->mining_tax = $character['mining_tax'];
                         $bill->mining_modifier = 0;//legacy
                         $bill->mining_taxrate = 0;//legacy
+                        $bill->user_id = $character["user_id"];
                         $bill->save();
                     }
                 }

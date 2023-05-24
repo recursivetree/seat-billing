@@ -36,38 +36,38 @@ trait BillingHelper
 
         if (setting("pricevalue", true) == "m") {
             $ledger = DB::table('character_minings')
-                ->select('users.main_character_id','character_infos.name')
+                ->select('character_minings.character_id as main_character_id','character_infos.name','users.id as user_id')
                 ->selectRaw("SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.$price_source * (?/100)) as mining_value", [$refineRate,$valuation])
                 ->selectRaw("SUM(IFNULL((character_minings.quantity / 100) * (invTypeMaterials.quantity * ? / 100),character_minings.quantity) * market_prices.$price_source * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax", [$refineRate,$valuation,$miningTax,$incentiveModifier])
                 ->leftJoin('invTypeMaterials', 'character_minings.type_id', 'invTypeMaterials.typeID')
                 ->join('market_prices', DB::RAW('IFNULL(invTypeMaterials.materialTypeID,character_minings.type_id)'), 'market_prices.type_id')
                 ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
+                ->join('character_infos','character_minings.character_id','character_infos.character_id')
+                ->join('invTypes','character_minings.type_id','invTypes.typeID')
                 ->join('refresh_tokens','refresh_tokens.character_id','character_minings.character_id')
                 ->join('users', 'users.id', 'refresh_tokens.user_id')
-                ->join('character_infos','users.main_character_id','character_infos.character_id')
-                ->join('invTypes','character_minings.type_id','invTypes.typeID')
                 ->leftJoin('seat_billing_ore_tax','invTypes.groupID','seat_billing_ore_tax.group_id')
                 ->where('year', $year)
                 ->where('month', $month)
                 ->where('character_affiliations.corporation_id', $corporation_id)
-                ->groupby('users.main_character_id','character_infos.name')
+                ->groupBy('character_minings.character_id','character_infos.name','users.id')
                 ->get();
         } else {
             $ledger = DB::table('character_minings')
-                ->select('users.main_character_id','character_infos.name')
+                ->select('character_minings.character_id as main_character_id','character_infos.name','users.id as user_id')
                 ->selectRaw("SUM(character_minings.quantity * market_prices.$price_source * (?/100)) as mining_value",[$valuation])
                 ->selectRaw("SUM(character_minings.quantity * market_prices.$price_source * (?/100) * IFNULL(seat_billing_ore_tax.tax_rate/100, ?/100) * (?/100)) as mining_tax",[$valuation,$miningTax, $incentiveModifier])
                 ->join('market_prices', 'character_minings.type_id', 'market_prices.type_id')
                 ->join('character_affiliations', 'character_minings.character_id', 'character_affiliations.character_id')
+                ->join('character_infos','character_minings.character_id','character_infos.character_id')
+                ->join('invTypes','character_minings.type_id','invTypes.typeID')
                 ->join('refresh_tokens','refresh_tokens.character_id','character_minings.character_id')
                 ->join('users', 'users.id', 'refresh_tokens.user_id')
-                ->join('character_infos','users.main_character_id','character_infos.character_id')
-                ->join('invTypes','character_minings.type_id','invTypes.typeID')
                 ->leftJoin('seat_billing_ore_tax','invTypes.groupID','seat_billing_ore_tax.group_id')
                 ->where('year', $year)
                 ->where('month', $month)
                 ->where('character_affiliations.corporation_id', $corporation_id)
-                ->groupby('users.main_character_id','character_infos.name')
+                ->groupBy('character_minings.character_id','character_infos.name','users.id')
                 ->get();
         }
 
@@ -98,6 +98,7 @@ trait BillingHelper
             $summary[$entry->main_character_id]['mining_tax'] += $entry->mining_tax;
             $summary[$entry->main_character_id]['id'] = $entry->main_character_id;
             $summary[$entry->main_character_id]['name'] = $entry->name;
+            $summary[$entry->main_character_id]['user_id'] = $entry->user_id;
         }
         return $summary;
     }
