@@ -5,6 +5,9 @@
 
 @section('content')
     @include("treelib::giveaway")
+    @foreach($characters as $character)
+        <p>{{$character}}</p>
+    @endforeach
 
     @foreach($months as $month)
         <div class="card">
