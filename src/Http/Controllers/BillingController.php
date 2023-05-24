@@ -103,9 +103,7 @@ class BillingController extends Controller
     }
 
     private function getUserBillByUserId($user){
-        $characters = $user->refresh_tokens()->pluck("character_id");
-
-        $months = CharacterBill::whereIn("character_id",$characters)
+        $months = CharacterBill::where("user_id",$user->id)
             ->orderBy("character_id","ASC")
             ->get()
             ->groupBy(function ($bill){

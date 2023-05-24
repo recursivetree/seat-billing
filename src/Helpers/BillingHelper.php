@@ -141,10 +141,18 @@ trait BillingHelper
 
     private function getCharacterBillByMonth($corporation_id, $year, $month)
     {
-        return CharacterBill::with('character:character_id,name')
-            ->where("corporation_id", $corporation_id)
+        return CharacterBill::query()
+            ->select("users.main_character_id as character_id", "character_infos.name as character_name")
+            ->selectRaw("SUM(mining_tax) as mining_tax")
+            ->selectRaw("SUM(mining_total) as mining_total")
+            ->where("seat_billing_character_bill.corporation_id", $corporation_id)
             ->where("month", $month)
             ->where("year", $year)
+            ->where("character_affiliations.corporation_id",$corporation_id)
+            ->join('users', 'users.id', 'user_id')
+            ->join('character_infos','users.main_character_id','character_infos.character_id')
+            ->join('character_affiliations', 'users.main_character_id', 'character_affiliations.character_id')
+            ->groupBy("character_infos.character_id","character_infos.name",'users.main_character_id')
             ->get();
     }
 
