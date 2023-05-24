@@ -95,15 +95,15 @@ class BillingController extends Controller
     }
 
     public function getUserBill(){
-        return $this->getUserBillByUser(auth()->user());
+        return $this->getUserBillByUserId(auth()->user());
     }
 
     public function getUserBillByCharacter($character_id){
-        return $this->getUserBillByUser(RefreshToken::find($character_id)->user);
+        return $this->getUserBillByUserId(RefreshToken::find($character_id)->user);
     }
 
-    private function getUserBillByUser($user){
-        $characters = $user->characters()->pluck("character_infos.character_id");
+    private function getUserBillByUserId($user){
+        $characters = $user->refresh_tokens()->pluck("character_id");
 
         $months = CharacterBill::whereIn("character_id",$characters)
             ->orderBy("character_id","ASC")
@@ -112,6 +112,6 @@ class BillingController extends Controller
                 return $bill->year * 100 + $bill->month;
             });
 
-        return view("billing::userBill",compact("months","characters"));
+        return view("billing::userBill",compact("months"));
     }
 }
