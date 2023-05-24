@@ -107,8 +107,9 @@ class BillingController extends Controller
             ->orderBy("character_id","ASC")
             ->get()
             ->groupBy(function ($bill){
-                return $bill->year * 100 + $bill->month;
-            });
+                return $bill->year * 12 + $bill->month;
+            })
+            ->sortKeysDesc();
 
         return view("billing::userBill",compact("months"));
     }
