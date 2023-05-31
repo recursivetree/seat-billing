@@ -6,6 +6,17 @@
 @section('content')
     @include("treelib::giveaway")
 
+    @if($months->isEmpty())
+        <div class="alert alert-info">
+            <h4 class="alert-heading">
+                <i class="fas fa-info"></i> Info
+            </h4>
+            <p>
+                It looks like there is no mining tax history available for you.
+            </p>
+        </div>
+    @endif
+
     @foreach($months as $month)
         <div class="card">
             <div class="card-header">
@@ -31,6 +42,14 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><b>Total:</b> {{ $month->sum("mining_total") }} ISK</td>
+                                <td><b>Total:</b> {{ $month->sum("mining_tax") }} ISK</td>
+                            </tr>
+                        </tfoot>
                     </table>
             </div>
         </div>
