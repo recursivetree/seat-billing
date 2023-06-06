@@ -9,7 +9,12 @@ See the instruction over at the [seat documentation](https://eveseat.github.io/d
 
 The package name is `recursivetree/seat-billing`.
 
-You should schedule a job running 'billing:update' as often as you want the live data to be updated.
+You should schedule a job running `billing:update` once at the beginning of a new month. 
+It will finish the bill for the last month.
+
+A second command `billing:update:live` should be added to the schedule automatically. 
+It updates the data for the current month once a day. 
+If you just installed the plugin and don't see any data, you can try to run it manually.
 
 ## Known issues
 * Characters changing corporations causes all kind of issues.
