@@ -40,9 +40,15 @@ class UpdateBills implements ShouldQueue
 
 
     public function handle(){
+        $now = now();
+        $current_year = $now->year;
+        $current_month = $now->month;
+
         $force = $this->force;
         $year = $this->year;
         $month = $this->month;
+
+        $is_prediction = !(10*$year + $month < 10*$current_year + $current_month);
 
         if ($force) {
             CorporationBill::where('month', $month)
@@ -115,9 +121,13 @@ class UpdateBills implements ShouldQueue
                             $tax_invoice->character_id = $character['id'];
                             $tax_invoice->receiver_corporation_id = $corp->corporation_id;
                             $tax_invoice->paid = 0;
-                            $tax_invoice->state = "open";
                             $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
                             $tax_invoice->reason_translation_data = ["month"=>$month, "year"=>$year];
+                        }
+                        if($is_prediction){
+                            $tax_invoice->state = "prediction";
+                        } else {
+                            $tax_invoice->state = "open";
                         }
                         $tax_invoice->amount = $character['mining_tax'];
                         $tax_invoice->save();

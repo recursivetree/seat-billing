@@ -4,6 +4,8 @@
     <span class="badge badge-secondary">{{ trans('billing::tax.tax_state_pending') }}</span>
 @elseif($invoice->state == "completed")
     <span class="badge badge-success">{{ trans('billing::tax.tax_state_completed') }}</span>
+@elseif($invoice->state == "prediction")
+    <span class="badge badge-success">{{ trans('billing::tax.tax_state_prediction') }}</span>
 @else
     <span class="badge badge-danger">BUG: Invalid state</span>
 @endif

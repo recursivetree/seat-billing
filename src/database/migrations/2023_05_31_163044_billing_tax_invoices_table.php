@@ -25,7 +25,7 @@ class BillingTaxInvoicesTable extends Migration
             $table->bigInteger("receiver_corporation_id")->unsigned();
             $table->bigInteger("amount")->unsigned();
             $table->bigInteger("paid")->unsigned();
-            $table->enum("state",["open","pending","completed"]);
+            $table->enum("state",["open","pending","completed","prediction"]);
             $table->string("reason_translation_key");
             $table->json("reason_translation_data");
         });
