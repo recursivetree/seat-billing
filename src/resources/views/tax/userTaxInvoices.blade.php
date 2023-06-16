@@ -39,7 +39,7 @@
                                     <td data-sort="{{$invoice->character_id}}">@include("web::partials.character",["character"=>$invoice->character])</td>
                                     <td>@include("web::partials.corporation",["corporation"=>$invoice->receiver_corporation])</td>
                                     <td>{{ trans($invoice->reason_translation_key, $invoice->reason_translation_data) }}</td>
-                                    <td data-sort="{{$invoice->remaining}}">{{ number($invoice->remaining, 0) }}</td>
+                                    <td data-sort="{{$invoice->amount - $invoice->paid}}">{{ number($invoice->amount - $invoice->paid, 0) }}</td>
                                     <td>@include("billing::tax.partials.invoiceStatus",compact("invoice"))</td>
                                 </tr>
                             @endforeach

@@ -24,10 +24,14 @@ class BillingTaxInvoicesTable extends Migration
             $table->index("character_id");
             $table->bigInteger("receiver_corporation_id")->unsigned();
             $table->bigInteger("amount")->unsigned();
-            $table->bigInteger("remaining")->unsigned();
+            $table->bigInteger("paid")->unsigned();
             $table->enum("state",["open","pending","completed"]);
             $table->string("reason_translation_key");
             $table->json("reason_translation_data");
+        });
+
+        Schema::table('seat_billing_character_bill', function (Blueprint $table) {
+            $table->bigInteger("tax_invoice_id")->unsigned()->nullable();
         });
     }
 
@@ -39,5 +43,9 @@ class BillingTaxInvoicesTable extends Migration
     public function down()
     {
         Schema::drop('seat_billing_tax_invoices');
+
+        Schema::table('seat_billing_character_bill', function (Blueprint $table) {
+            $table->dropColumn("tax_invoice_id");
+        });
     }
 }

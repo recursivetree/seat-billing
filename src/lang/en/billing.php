@@ -19,5 +19,6 @@ return [
     'mining_tax'=>'Mining Tax',
     'mining_amount'=>'Mining Amount',
     'isk'=>'ISK',
-    'total'=>'Total'
+    'total'=>'Total',
+    'tax_invoice_message'=>'seat-billing mining tax for :month/:year'
 ];

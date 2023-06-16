@@ -26,4 +26,8 @@ class CharacterBill extends Model
     public function corporation(){
         return $this->belongsTo(CorporationInfo::class,'corporation_id','corporation_id');
     }
+
+    public function tax_invoice(){
+        return $this->hasOne(TaxInvoice::class,'id','tax_invoice_id');
+    }
 }
