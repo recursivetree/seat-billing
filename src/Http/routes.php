@@ -47,3 +47,15 @@ Route::group([
         'middleware' => 'can:billing.view'
     ]);
 });
+
+Route::group([
+    'namespace' => 'Denngarr\Seat\Billing\Http\Controllers',
+    'prefix' => 'billing/tax',
+    'middleware' => ['web', 'auth']
+], function () {
+    Route::get('/', [
+        'as' => 'tax.userTaxInvoices',
+        'uses' => 'TaxInvoiceController@getUserTaxInvoices',
+    ]);
+});
+

@@ -20,7 +20,7 @@ class CharacterBill extends Model
     }
 
     public function user(){
-        return $this->belongsTo(User::class,'id','character_id');
+        return $this->belongsTo(User::class,'id','user_id');
     }
 
     public function corporation(){

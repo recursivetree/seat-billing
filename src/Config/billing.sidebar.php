@@ -23,6 +23,11 @@ return [
                 'name' => 'User',
                 'icon' => 'fas fa-user',
                 'route' => 'billing.userBill',
+            ],
+            'tax' => [
+                'name' => 'Tax Invoices',
+                'icon' => 'fas fa-user',
+                'route' => 'tax.userTaxInvoices',
             ]
         ],
     ],
