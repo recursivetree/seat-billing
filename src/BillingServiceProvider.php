@@ -3,6 +3,8 @@
 namespace Denngarr\Seat\Billing;
 
 use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
+use Denngarr\Seat\Billing\Models\TaxInvoice;
+use Denngarr\Seat\Billing\Observers\TaxInvoiceObserver;
 use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
 
@@ -20,6 +22,8 @@ class BillingServiceProvider extends AbstractSeatPlugin
         $this->add_migrations();
         $this->add_translations();
         $this->add_commands();
+
+        TaxInvoice::observe(TaxInvoiceObserver::class);
     }
 
     /**
