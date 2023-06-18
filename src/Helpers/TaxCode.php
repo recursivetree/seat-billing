@@ -13,7 +13,7 @@ class TaxCode
 
     private static function generateTaxCode($type, $id)
     {
-        return sprintf("%02X%02X%016X", self::CURRENT_VERSION, $type, $id);
+        return sprintf("tax%02X%02X%016X", self::CURRENT_VERSION, $type, $id);
     }
 
     public static function generateInvoiceCode($invoice_id)
@@ -28,14 +28,16 @@ class TaxCode
 
     public static function decodeTaxCode($code)
     {
-        $version_str = substr($code, 0, 2);
+        if(substr($code, 0, 3) !== "tax") return null;
+
+        $version_str = substr($code, 3, 2);
         // php quirks: false if an invalid operation
         if ($version_str === false) return null;
         $version = hexdec($version_str);
 
         switch ($version) {
             case 0x01:{
-                return self::decodeV1(substr($code, 2));
+                return self::decodeV1(substr($code, 5));
             }
             case 0:
             default: {
