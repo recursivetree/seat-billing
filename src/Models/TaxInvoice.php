@@ -28,6 +28,6 @@ class TaxInvoice extends Model
     }
 
     public function receiver_corporation(){
-        return $this->belongsTo(CorporationInfo::class,'corporation_id','receiver_corporation_id');
+        return $this->belongsTo(CorporationInfo::class,'receiver_corporation_id','corporation_id');
     }
 }

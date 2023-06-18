@@ -2,17 +2,14 @@
 
 namespace Denngarr\Seat\Billing\Jobs;
 
-use Denngarr\Seat\Billing\Helpers\BillingHelper;
 use Denngarr\Seat\Billing\Helpers\TaxCode;
-use Denngarr\Seat\Billing\Models\CharacterBill;
-use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seat\Eveapi\Models\Corporation\CorporationInfo;
+use Seat\Eveapi\Jobs\Middleware\WithoutOverlapping;
 use Seat\Eveapi\Models\RefreshToken;
 
 class ProcessTaxPayment implements ShouldQueue
@@ -31,6 +28,11 @@ class ProcessTaxPayment implements ShouldQueue
         return ["seat-billing", "tax",];
     }
 
+    public function middleware(): array
+    {
+        $token = RefreshToken::find($this->journal_entry->first_party_id);
+        return [(new WithoutOverlapping($token->user->id ?? rand()))->releaseAfter(10)];
+    }
 
     public function handle(){
         //make sure this is a transaction
@@ -40,7 +42,7 @@ class ProcessTaxPayment implements ShouldQueue
         if($token === null) return;
 
         $tax_code = TaxCode::decodeTaxCode($this->journal_entry->reason);
-        if(!$tax_code) dd(7);
+        if(!$tax_code) return;
 
         $invoices = $tax_code->getTaxInvoices($token->user->id);
         if($invoices->isEmpty()){
