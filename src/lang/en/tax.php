@@ -14,5 +14,6 @@ return [
     'receiver_corporation'=>'Receiver Corporation',
     'tax_reason'=>'Reason',
     'remaining_tax'=>'Remaining',
-    'tax_state'=>'Payment State'
+    'tax_state'=>'Payment State',
+    'tax_code'=>'Tax Code'
 ];

@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
+use Denngarr\Seat\Billing\Helpers\TaxCode;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Support\Facades\DB;
 use Seat\Web\Http\Controllers\Controller;

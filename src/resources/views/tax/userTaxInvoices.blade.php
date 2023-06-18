@@ -31,6 +31,7 @@
                                 <th>{{ trans('billing::tax.tax_reason') }}</th>
                                 <th>{{ trans('billing::tax.remaining_tax') }}</th>
                                 <th>{{ trans('billing::tax.tax_state') }}</th>
+                                <th>{{ trans('billing::tax.tax_code') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,12 +42,22 @@
                                     <td>{{ trans($invoice->reason_translation_key, $invoice->reason_translation_data) }}</td>
                                     <td data-sort="{{$invoice->amount - $invoice->paid}}">{{ number($invoice->amount - $invoice->paid, 0) }} ISK</td>
                                     <td>@include("billing::tax.partials.invoiceStatus",compact("invoice"))</td>
+                                    <td>
+                                        <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                         <tfoot>
                             <tr>
-
+                                <td><b>{{ trans('billing::billing.total') }}:</b></td>
+                                <td>@include("web::partials.corporation",["corporation"=>$invoice->receiver_corporation])</td>
+                                <td></td>
+                                <td>{{ number($corp_invoices->sum("amount") - $corp_invoices->sum("paid"), 0) }} ISK</td>
+                                <td></td>
+                                <td>
+                                    <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
