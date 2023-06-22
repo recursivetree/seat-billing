@@ -5,7 +5,6 @@ return [
         'name' => 'SeAT Billing',
         'icon' => 'fas fa-credit-card',
         'route_segment' => 'billing',
-        'permission' => 'billing.view',
         'entries' => [
             'billing' => [
                 'name' => 'Billing Data',
@@ -33,6 +32,7 @@ return [
                 'name' => 'Tax Management',
                 'icon' => 'fas fa-briefcase',
                 'route' => 'tax.corporationSelectionPage',
+                'permission'=>'billing.tax_manager',
             ],
         ],
     ],
