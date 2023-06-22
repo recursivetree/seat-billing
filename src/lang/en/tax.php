@@ -39,5 +39,7 @@ return [
     'user'=>'User',
     'tax_user_total_amount'=>'Total Tax',
     'tax_user_open_amount'=>'Open Tax',
-    'no_corporation_user_overview_data'=>'There is no tax data available for your users.'
+    'no_corporation_user_overview_data'=>'There is no tax data available for your users.',
+    'due_until'=>'Due Until',
+    'created_at'=>'Created At'
 ];

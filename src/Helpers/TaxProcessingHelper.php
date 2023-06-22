@@ -23,6 +23,7 @@ trait TaxProcessingHelper
             "corp"=>CorporationInfo::find($corporation_id)->name ?? "Unknown Corporation",
             "code"=>$code,
         ];
+        $invoice->due_until = now();
         $invoice->save();
     }
 

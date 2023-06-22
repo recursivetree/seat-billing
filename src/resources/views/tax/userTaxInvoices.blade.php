@@ -52,6 +52,8 @@
                             <th>{{ trans('billing::tax.tax_reason') }}</th>
                             <th>{{ trans('billing::tax.remaining_tax') }}</th>
                             <th>{{ trans('billing::tax.tax_state') }}</th>
+                            <th>{{ trans('billing::tax.created_at') }}</th>
+                            <th>{{ trans('billing::tax.due_until') }}</th>
                             <th>{{ trans('billing::tax.tax_code') }}</th>
                         </tr>
                     </thead>
@@ -63,6 +65,12 @@
                                 <td>{{ trans($invoice->reason_translation_key, $invoice->reason_translation_data) }}</td>
                                 <td data-sort="{{$invoice->amount - $invoice->paid}}">{{ number($invoice->amount - $invoice->paid, 0) }} ISK</td>
                                 <td>@include("billing::tax.partials.invoiceStatus",compact("invoice"))</td>
+                                <td data-sort="{{ $invoice->created_at->timestamp }}">{{ $invoice->created_at->format('M d Y') }}</td>
+                                @if(in_array($invoice->state,["pending","open"]) && carbon($invoice->due_until) < $now)
+                                    <td class="table-warning" data-sort="{{ carbon($invoice->due_until)->timestamp }}">{{ carbon($invoice->due_until)->format('M d Y') }}</td>
+                                @else
+                                    <td data-sort="{{ carbon($invoice->due_until)->timestamp }}">{{ carbon($invoice->due_until)->format('M d Y') }}</td>
+                                @endif
                                 <td>
                                     <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
                                 </td>
@@ -75,6 +83,8 @@
                             <td></td>
                             <td></td>
                             <td>{{ number($corp_invoices->sum("amount") - $corp_invoices->sum("paid"), 0) }} ISK</td>
+                            <td></td>
+                            <td></td>
                             <td></td>
                             <td>
                                 <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>

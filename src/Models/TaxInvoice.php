@@ -11,8 +11,6 @@ class TaxInvoice extends Model
 {
     protected $fillable = ["group_id","tax_rate"];
 
-    public $timestamps = false;
-
     protected $table = 'seat_billing_tax_invoices';
 
     protected $casts = [

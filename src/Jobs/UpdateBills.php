@@ -123,6 +123,7 @@ class UpdateBills implements ShouldQueue
                             $tax_invoice->paid = 0;
                             $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
                             $tax_invoice->reason_translation_data = ["month"=>$month, "year"=>$year];
+                            $tax_invoice->due_until = \Carbon\Carbon::create($year, $month, 1,1,1,1,"Europe/London")->endOfMonth()->addDays(30);
                         }
                         if($is_prediction){
                             $tax_invoice->state = "prediction";

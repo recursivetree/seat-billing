@@ -20,7 +20,9 @@ class TaxInvoiceController extends Controller
             ->get()
             ->groupBy("receiver_corporation_id");
 
-        return view("billing::tax.userTaxInvoices", compact("invoices"));
+        $now = now();
+
+        return view("billing::tax.userTaxInvoices", compact("invoices", "now"));
     }
 
     public function getForeignUserTaxInvoices($user_id){
@@ -29,7 +31,9 @@ class TaxInvoiceController extends Controller
             ->get()
             ->groupBy("receiver_corporation_id");
 
-        return view("billing::tax.userTaxInvoices", compact("invoices"));
+        $now = now();
+
+        return view("billing::tax.userTaxInvoices", compact("invoices", "now"));
     }
 
     public function balanceUserOverpayment(Request $request){
