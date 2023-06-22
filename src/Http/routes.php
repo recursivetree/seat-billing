@@ -57,5 +57,10 @@ Route::group([
         'as' => 'tax.userTaxInvoices',
         'uses' => 'TaxInvoiceController@getUserTaxInvoices',
     ]);
+
+    Route::post('/user/overpayment/balance', [
+        'as' => 'tax.balanceUserOverpayment',
+        'uses' => 'TaxInvoiceController@balanceUserOverpayment',
+    ]);
 });
 

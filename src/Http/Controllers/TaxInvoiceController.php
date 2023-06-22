@@ -3,6 +3,7 @@
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
 use Denngarr\Seat\Billing\Helpers\TaxCode;
+use Denngarr\Seat\Billing\Jobs\BalanceTaxPayment;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Support\Facades\DB;
 use Seat\Web\Http\Controllers\Controller;
@@ -18,5 +19,15 @@ class TaxInvoiceController extends Controller
             ->groupBy("receiver_corporation_id");
 
         return view("billing::tax.userTaxInvoices", compact("invoices"));
+    }
+
+    public function balanceUserOverpayment(Request $request){
+        $request->validate([
+            "corporation_id"=>"required|integer"
+        ]);
+
+        BalanceTaxPayment::dispatch(auth()->user()->id, (int)$request->corporation_id);
+
+        return redirect()->back()->with("success",trans("billing::tax.overpayment_balancing_scheduled"));
     }
 }

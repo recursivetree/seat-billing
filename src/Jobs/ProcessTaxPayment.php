@@ -3,6 +3,7 @@
 namespace Denngarr\Seat\Billing\Jobs;
 
 use Denngarr\Seat\Billing\Helpers\TaxCode;
+use Denngarr\Seat\Billing\Helpers\TaxProcessingHelper;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,7 @@ use Seat\Eveapi\Models\RefreshToken;
 
 class ProcessTaxPayment implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaxProcessingHelper;
 
     private $journal_entry;
 
@@ -46,48 +47,15 @@ class ProcessTaxPayment implements ShouldQueue
 
         $invoices = $tax_code->getTaxInvoices($token->user->id);
         if($invoices->isEmpty()){
-            $this->handleOverPayment($token->user->id,"billing::tax.tax_no_matching_invoice",(int)$this->journal_entry->amount);
+            $this->handleOverPayment($token->user->id,"billing::tax.tax_no_matching_invoice",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
             return;
         }
 
-        $remaining = (int)$this->journal_entry->amount;
-        foreach ($invoices as $invoice){
-            if($invoice->state == "open" || $invoice->state == "pending"){
-                $missing = $invoice->amount - $invoice->paid;
-                if($remaining >= $missing){
-                    $payment = $missing;
-                } else {
-                    $payment = $remaining;
-                }
-                $invoice->paid += $payment;
-                $remaining -= $payment;
-
-                $invoice->save();
-            }
-        }
+        $remaining = $this->coverInvoices($invoices,(int)$this->journal_entry->amount);
 
         //overpayment
         if($remaining > 0){
-            $this->handleOverPayment($token->user->id,"billing::tax.too_much_tax_paid", $remaining);
+            $this->handleOverPayment($token->user->id,"billing::tax.too_much_tax_paid", $remaining,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
         }
-    }
-
-    private function handleOverPayment($user, $reason, $amount){
-        // this means someone has paid, but there is no open invoice
-        // add an overpaid tax entry
-        $invoice = new TaxInvoice();
-        $invoice->user_id = $user;
-        $invoice->character_id = $this->journal_entry->first_party_id;
-        $invoice->receiver_corporation_id = $this->journal_entry->second_party_id;
-        $invoice->amount = 0;
-        $invoice->paid = $amount;
-        $invoice->state = "overtaxed";
-        $invoice->reason_translation_key = $reason;
-        $invoice->reason_translation_data = [
-            "tax"=> number($amount, 0),
-            "corp"=>$this->journal_entry->second_party->name,
-            "code"=>$this->journal_entry->reason,
-        ];
-        $invoice->save();
     }
 }
