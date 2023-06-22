@@ -28,7 +28,12 @@ return [
                 'name' => 'Tax Invoices',
                 'icon' => 'fas fa-user',
                 'route' => 'tax.userTaxInvoices',
-            ]
+            ],
+            'corporation_tax' => [
+                'name' => 'Tax Management',
+                'icon' => 'fas fa-briefcase',
+                'route' => 'tax.corporationSelectionPage',
+            ],
         ],
     ],
 ];

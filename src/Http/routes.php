@@ -62,5 +62,21 @@ Route::group([
         'as' => 'tax.balanceUserOverpayment',
         'uses' => 'TaxInvoiceController@balanceUserOverpayment',
     ]);
+
+    Route::get('/user/{id}/invoices', [
+        'as' => 'tax.foreignUserTaxInvoices',
+        'uses' => 'TaxInvoiceController@getForeignUserTaxInvoices',
+    ]);
+
+
+    Route::get('/corporations/list', [
+        'as' => 'tax.corporationSelectionPage',
+        'uses' => 'TaxInvoiceController@corporationSelectionPage',
+    ]);
+
+    Route::get('/corporations/{id}/overview', [
+        'as' => 'tax.corporationOverviewPage',
+        'uses' => 'TaxInvoiceController@corporationOverviewPage',
+    ]);
 });
 
