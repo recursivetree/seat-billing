@@ -59,6 +59,7 @@ class BillingServiceProvider extends AbstractSeatPlugin
      */
     public function register()
     {
+        BillingSettings::init();
 
         $this->mergeConfigFrom(__DIR__ . '/Config/billing.sidebar.php', 'package.sidebar');
 

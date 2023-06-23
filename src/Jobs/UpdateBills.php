@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Jobs;
 
+use Denngarr\Seat\Billing\BillingSettings;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
@@ -49,6 +50,8 @@ class UpdateBills implements ShouldQueue
         $month = $this->month;
 
         $is_prediction = !(10*$year + $month < 10*$current_year + $current_month);
+
+        $update_bills = BillingSettings::$GENERATE_TAX_INVOICES->get(false);
 
         if ($force) {
             CorporationBill::where('month', $month)
@@ -115,23 +118,25 @@ class UpdateBills implements ShouldQueue
                     $bill = $bill ?? new CharacterBill();
                     if ($recompute) {
                         $tax_invoice = $bill->tax_invoice;
-                        if($tax_invoice === null){
-                            $tax_invoice = new TaxInvoice();
-                            $tax_invoice->user_id = $character["user_id"];
-                            $tax_invoice->character_id = $character['id'];
-                            $tax_invoice->receiver_corporation_id = $corp->corporation_id;
-                            $tax_invoice->paid = 0;
-                            $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
-                            $tax_invoice->reason_translation_data = ["month"=>$month, "year"=>$year];
-                            $tax_invoice->due_until = \Carbon\Carbon::create($year, $month, 1,1,1,1,"Europe/London")->endOfMonth()->addDays(30);
+                        if($update_bills) {
+                            if ($tax_invoice === null) {
+                                $tax_invoice = new TaxInvoice();
+                                $tax_invoice->user_id = $character["user_id"];
+                                $tax_invoice->character_id = $character['id'];
+                                $tax_invoice->receiver_corporation_id = $corp->corporation_id;
+                                $tax_invoice->paid = 0;
+                                $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
+                                $tax_invoice->reason_translation_data = ["month" => $month, "year" => $year];
+                                $tax_invoice->due_until = \Carbon\Carbon::create($year, $month, 1, 1, 1, 1, "Europe/London")->endOfMonth()->addDays(30);
+                            }
+                            if ($is_prediction) {
+                                $tax_invoice->state = "prediction";
+                            } else {
+                                $tax_invoice->state = "open";
+                            }
+                            $tax_invoice->amount = $character['mining_tax'];
+                            $tax_invoice->save();
                         }
-                        if($is_prediction){
-                            $tax_invoice->state = "prediction";
-                        } else {
-                            $tax_invoice->state = "open";
-                        }
-                        $tax_invoice->amount = $character['mining_tax'];
-                        $tax_invoice->save();
 
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;
@@ -142,7 +147,7 @@ class UpdateBills implements ShouldQueue
                         $bill->mining_modifier = 0;//legacy
                         $bill->mining_taxrate = 0;//legacy
                         $bill->user_id = $character["user_id"];
-                        $bill->tax_invoice_id = $tax_invoice->id;
+                        $bill->tax_invoice_id = $tax_invoice->id ?? null;
                         $bill->save();
                     }
                 }

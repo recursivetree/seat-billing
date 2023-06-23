@@ -224,6 +224,22 @@
                     </div>
                 </div>
 
+                <hr>
+                <h4>{{ trans("billing::billing.tax_invoices") }}</h4>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tax_invoices" id="tax_invoices1" value="enabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$GENERATE_TAX_INVOICES->get(false)===true)>
+                    <label class="form-check-label" for="tax_invoices1">
+                        Enable Tax Invoices
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tax_invoices" id="tax_invoices2" value="disabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$GENERATE_TAX_INVOICES->get(false)===false)>
+                    <label class="form-check-label" for="tax_invoices2">
+                        Disable Tax Invoices
+                    </label>
+                </div>
+
             </div>
 
             <div class="card-footer">

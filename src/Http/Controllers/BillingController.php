@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
+use Denngarr\Seat\Billing\BillingSettings;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
@@ -43,6 +44,7 @@ class BillingController extends Controller
             'gastax'            => 'required|integer|min:0',
             'icetax'            => 'required|integer|min:0',
             'pricesource'       => 'required|string|in:'. implode(",",self::ALLOWED_PRICE_SOURCES),
+            'tax_invoices'      => 'required|string|in:enabled,disabled'
         ]);
 
         setting(["oremodifier", intval($request->oremodifier)], true);
@@ -55,6 +57,7 @@ class BillingController extends Controller
         setting(["irate", intval($request->irate)], true);
         setting(["pricevalue", $request->pricevalue], true);
         setting(["price_source", $request->pricesource], true);
+        BillingSettings::$GENERATE_TAX_INVOICES->set($request->tax_invoices === "enabled");
 
         OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
         OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);
