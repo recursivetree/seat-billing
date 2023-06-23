@@ -41,5 +41,7 @@ return [
     'tax_user_open_amount'=>'Open Tax',
     'no_corporation_user_overview_data'=>'There is no tax data available for your users.',
     'due_until'=>'Due Until',
-    'created_at'=>'Created At'
+    'created_at'=>'Created At',
+    'tax_user_overdue_amount'=>'Overdue Tax',
+    'tax_user_overdue_amount_desc'=>'This much ISK remains unpaid after the deadline'
 ];

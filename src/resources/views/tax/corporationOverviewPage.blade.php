@@ -18,9 +18,10 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4 col-sm-6">
             <div class="info-box">
-                <span class="info-box-icon bg-red elevation-1"><i class="fa fa-clock"></i></span>
+                <span class="info-box-icon bg-secondary elevation-1"><i class="fa fa-layer-group"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">{{ trans('billing::tax.open_invoices') }} <small class="text-muted">({{ trans('billing::tax.open_invoices_desc') }})</small></span>
                     <span class="info-box-number">
@@ -50,7 +51,19 @@
                     <span class="info-box-text">{{ trans('billing::tax.pending_tax') }} <small
                                 class="text-muted">({{ trans('billing::tax.pending_tax_desc') }})</small></span>
                     <span class="info-box-number">
-                {{ number($open_isk,0) }}
+                {{ number($open_isk,0) }} ISK
+              </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="info-box">
+                <span class="info-box-icon bg-red elevation-1"><i class="fa fa-clock"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ trans('billing::tax.tax_user_overdue_amount') }} <small class="text-muted">({{ trans('billing::tax.tax_user_overdue_amount_desc') }})</small></span>
+                    <span class="info-box-number">
+                {{ number($overdue_isk,0) }} ISK
               </span>
                 </div>
             </div>
@@ -68,6 +81,7 @@
                         <th>{{ trans('billing::tax.user') }}</th>
                         <th>{{ trans('billing::tax.tax_user_total_amount') }}</th>
                         <th>{{ trans('billing::tax.tax_user_open_amount') }}</th>
+                        <th>{{ trans('billing::tax.tax_user_overdue_amount') }}</th>
                         <th>{{ trans('billing::tax.actions') }}</th>
                     </tr>
                 </thead>
@@ -76,10 +90,11 @@
                         <tr>
                             <td data-sort="{{$user->user->main_character_id}}">@include("web::partials.character",["character"=>$user->user->main_character])</td>
                             <td data-sort="{{$user->total}}">{{ number($user->total,0) }} ISK</td>
-                            @if($user->total - $user->paid > 0)
-                                <td data-sort="{{$user->total - $user->paid}}" class="table-warning">{{ number($user->total - $user->paid,0) }} ISK</td>
+                            <td data-sort="{{$user->total - $user->paid}}">{{ number($user->total - $user->paid,0) }} ISK</td>
+                            @if($user->overdue > 0)
+                                <td data-sort="{{$user->overdue}}" class="table-danger">{{ number($user->overdue,0) }} ISK</td>
                             @else
-                                <td data-sort="{{$user->total - $user->paid}}">{{ number($user->total - $user->paid,0) }} ISK</td>
+                                <td data-sort="{{$user->overdue}}">{{ number($user->overdue,0) }} ISK</td>
                             @endif
                             <td><a href="{{route("tax.foreignUserTaxInvoices",["id"=>$user->user_id])}}">{{trans('billing::tax.view_tax_details')}}</a> </td>
                         </tr>

@@ -63,17 +63,18 @@ class TaxInvoiceController extends Controller
         $open_invoices_count = TaxInvoice::where("receiver_corporation_id", $corporation_id)->whereIn("state",["open","pending"])->count();
         $completed_invoices_count = TaxInvoice::where("receiver_corporation_id", $corporation_id)->where("state","completed")->count();
         $open_isk = TaxInvoice::where("receiver_corporation_id", $corporation_id)->whereIn("state",["open","pending"])->sum("amount");
+        $overdue_isk = TaxInvoice::where("receiver_corporation_id", $corporation_id)->whereDate("due_until","<",now())->sum("amount") - TaxInvoice::where("receiver_corporation_id", $corporation_id)->whereDate("due_until","<",now())->sum("paid");
 
         $user_totals = TaxInvoice::with("user.main_character")
             ->select("user_id")
             ->selectRaw("SUM(amount) as total")
             ->selectRaw("SUM(paid) as paid")
+            ->selectRaw("(select SUM(amount - paid) from seat_billing_tax_invoices as inside where inside.user_id = seat_billing_tax_invoices.user_id and inside.receiver_corporation_id=receiver_corporation_id and inside.due_until<CURRENT_DATE()) as overdue")
             ->where("receiver_corporation_id", $corporation_id)
             ->groupBy("user_id")
             ->get();
 
-        //dd($user_totals->first()->user);
 
-        return view("billing::tax.corporationOverviewPage", compact("corporation","total_invoices_count", "open_invoices_count","completed_invoices_count","open_isk", "user_totals"));
+        return view("billing::tax.corporationOverviewPage", compact("corporation","total_invoices_count", "open_invoices_count","completed_invoices_count","open_isk", "user_totals", "overdue_isk"));
     }
 }
