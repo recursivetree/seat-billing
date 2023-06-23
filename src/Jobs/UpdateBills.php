@@ -52,6 +52,10 @@ class UpdateBills implements ShouldQueue
         $is_prediction = !(10*$year + $month < 10*$current_year + $current_month);
 
         $update_bills = BillingSettings::$GENERATE_TAX_INVOICES->get(false);
+        $invoice_whitelist = BillingSettings::$TAX_INVOICE_WHITELIST->get([]);
+        $invoice_whitelist_enabled = count($invoice_whitelist) > 0;
+
+        //dd($invoice_whitelist, $invoice_whitelist_enabled);
 
         if ($force) {
             CorporationBill::where('month', $month)
@@ -118,7 +122,8 @@ class UpdateBills implements ShouldQueue
                     $bill = $bill ?? new CharacterBill();
                     if ($recompute) {
                         $tax_invoice = $bill->tax_invoice;
-                        if($update_bills) {
+                        //var_dump(in_array($corp->corporation_id, $invoice_whitelist),$corp->corporation_id,$invoice_whitelist);
+                        if($update_bills && (!$invoice_whitelist_enabled || in_array($corp->corporation_id, $invoice_whitelist))) {
                             if ($tax_invoice === null) {
                                 $tax_invoice = new TaxInvoice();
                                 $tax_invoice->user_id = $character["user_id"];

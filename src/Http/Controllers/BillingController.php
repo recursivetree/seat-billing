@@ -7,6 +7,7 @@ use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
 use Illuminate\Support\Facades\DB;
+use Seat\Eveapi\Models\Corporation\CorporationInfo;
 use Seat\Eveapi\Models\RefreshToken;
 use Seat\Web\Http\Controllers\Controller;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
@@ -20,8 +21,13 @@ class BillingController extends Controller
     public function getBillingSettings()
     {
         $ore_tax = OreTax::all();
+        $whitelist = implode("\n",collect(BillingSettings::$TAX_INVOICE_WHITELIST->get([]))
+            ->map(function ($id){
+                return CorporationInfo::where("corporation_id",$id)->first()->name ?? "Unknown Corporation";
+            })
+            ->toArray());
 
-        return view('billing::settings', compact("ore_tax"));
+        return view('billing::settings', compact("ore_tax","whitelist"));
     }
 
     const ALLOWED_PRICE_SOURCES = ["sell_price","buy_price","adjusted_price","average_price"];
@@ -44,8 +50,27 @@ class BillingController extends Controller
             'gastax'            => 'required|integer|min:0',
             'icetax'            => 'required|integer|min:0',
             'pricesource'       => 'required|string|in:'. implode(",",self::ALLOWED_PRICE_SOURCES),
-            'tax_invoices'      => 'required|string|in:enabled,disabled'
+            'tax_invoices'      => 'required|string|in:enabled,disabled',
+            'tax_invoices_whitelist'=>'nullable|string',
         ]);
+
+        if($request->tax_invoices_whitelist !== null) {
+            $parts = explode("\r\n", $request->tax_invoices_whitelist);
+            $corps = collect($parts)
+                ->map(function ($name) {
+                    return CorporationInfo::where("name", $name)->first()->corporation_id;
+                })
+                ->filter(function ($item) {
+                    return $item !== null;
+                })
+                ->toArray();
+            if (count($parts) !== count($corps)) {
+                return redirect()->back()->with("error", "Unrecognised corporation in Tax Invoice Corporation Whitelist");
+            }
+            BillingSettings::$TAX_INVOICE_WHITELIST->set($corps);
+        } else {
+            BillingSettings::$TAX_INVOICE_WHITELIST->set([]);
+        }
 
         setting(["oremodifier", intval($request->oremodifier)], true);
         setting(["oretaxrate", intval($request->oretaxrate)], true);
