@@ -3,7 +3,7 @@
 Route::group([
     'namespace' => 'Denngarr\Seat\Billing\Http\Controllers',
     'prefix' => 'billing',
-    'middleware' => ['web', 'auth']
+    'middleware' => ['web', 'auth','locale']
 ], function () {
     Route::get('/', [
         'as' => 'billing.view',
@@ -51,7 +51,7 @@ Route::group([
 Route::group([
     'namespace' => 'Denngarr\Seat\Billing\Http\Controllers',
     'prefix' => 'billing/tax',
-    'middleware' => ['web', 'auth']
+    'middleware' => ['web', 'auth','locale']
 ], function () {
     Route::get('/', [
         'as' => 'tax.userTaxInvoices',
