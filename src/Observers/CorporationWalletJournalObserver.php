@@ -8,6 +8,7 @@ class CorporationWalletJournalObserver
 {
     public static function created($journal_entry){
         if($journal_entry->ref_type === "player_donation" && substr($journal_entry->reason,0,3) === "tax"){
+            logger()->debug("scheduling tax processing");
             ProcessTaxPayment::dispatch($journal_entry);
         }
     }
