@@ -28,6 +28,8 @@ class TaxCode
 
     public static function decodeTaxCode($code)
     {
+        $code = trim($code);
+
         if(substr($code, 0, 3) !== "tax") return null;
 
         $version_str = substr($code, 3, 2);

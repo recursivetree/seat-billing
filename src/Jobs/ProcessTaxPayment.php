@@ -36,14 +36,20 @@ class ProcessTaxPayment implements ShouldQueue
     }
 
     public function handle(){
-        //make sure this is a transaction
-        if($this->journal_entry->ref_type !== "player_donation") return;
-
         $token = RefreshToken::find($this->journal_entry->first_party_id);
         if($token === null) return;
 
+        $this->handleOverPayment($token->user->id,"debug:TokenFound",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+
+        //make sure this is a transaction
+        if($this->journal_entry->ref_type !== "player_donation") return;
+
+        $this->handleOverPayment($token->user->id,"debug:RefType",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+
         $tax_code = TaxCode::decodeTaxCode($this->journal_entry->reason);
         if(!$tax_code) return;
+
+        $this->handleOverPayment($token->user->id,"debug:InvoiceLoad",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
 
         $invoices = $tax_code->getTaxInvoices($token->user->id);
         if($invoices->isEmpty()){
@@ -53,9 +59,16 @@ class ProcessTaxPayment implements ShouldQueue
 
         $remaining = $this->coverInvoices($invoices,(int)$this->journal_entry->amount);
 
+        $this->handleOverPayment($token->user->id,"debug:InvoicesCovered",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+
         //overpayment
         if($remaining > 0){
+            $this->handleOverPayment($token->user->id,"debug:SmthRemaining",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+
             $this->handleOverPayment($token->user->id,"billing::tax.too_much_tax_paid", $remaining,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
         }
+
+        $this->handleOverPayment($token->user->id,"debug:Done",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+
     }
 }
