@@ -6,6 +6,17 @@
 @section('content')
     @include("treelib::giveaway")
 
+    @if($months->isEmpty())
+        <div class="alert alert-info">
+            <h4 class="alert-heading">
+                <i class="fas fa-info"></i> {{ trans('billing::billing.info') }}
+            </h4>
+            <p>
+                {{ trans('billing::billing.no_user_tax_history') }}
+            </p>
+        </div>
+    @endif
+
     @foreach($months as $month)
         <div class="card">
             <div class="card-header">
@@ -15,10 +26,10 @@
                     <table class="table DataTable table-hover table-striped">
                         <thead>
                             <tr>
-                                <th>Character</th>
-                                <th>Corporation</th>
-                                <th>Mining Amount</th>
-                                <th>Mining Tax</th>
+                                <th>{{ trans('billing::billing.character') }}</th>
+                                <th>{{ trans('billing::billing.corporation') }}</th>
+                                <th>{{ trans('billing::billing.mining_amount') }}</th>
+                                <th>{{ trans('billing::billing.mining_tax') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -26,11 +37,19 @@
                                 <tr>
                                     <td>@include("web::partials.character",["character"=>$bill->character])</td>
                                     <td>@include("web::partials.corporation",["corporation"=>$bill->corporation])</td>
-                                    <td data-sort="{{$bill->mining_total}}">{{ number($bill->mining_total, 0) }} ISK</td>
-                                    <td data-sort="{{$bill->mining_tax}}">{{ number($bill->mining_tax, 0) }} ISK</td>
+                                    <td data-sort="{{$bill->mining_total}}">{{ number($bill->mining_total, 0) }} {{ trans('billing::billing.isk') }}</td>
+                                    <td data-sort="{{$bill->mining_tax}}">{{ number($bill->mining_tax, 0) }} {{ trans('billing::billing.isk') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><b>{{ trans('billing::billing.total') }}:</b> {{ $month->sum("mining_total") }} {{ trans('billing::billing.isk') }}</td>
+                                <td><b>{{ trans('billing::billing.total') }}:</b> {{ $month->sum("mining_tax") }} {{ trans('billing::billing.isk') }}</td>
+                            </tr>
+                        </tfoot>
                     </table>
             </div>
         </div>

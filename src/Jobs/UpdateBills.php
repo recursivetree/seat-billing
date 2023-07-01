@@ -2,9 +2,11 @@
 
 namespace Denngarr\Seat\Billing\Jobs;
 
+use Denngarr\Seat\Billing\BillingSettings;
 use Denngarr\Seat\Billing\Helpers\BillingHelper;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
+use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -39,15 +41,24 @@ class UpdateBills implements ShouldQueue
 
 
     public function handle(){
+        $now = now();
+        $current_year = $now->year;
+        $current_month = $now->month;
+
         $force = $this->force;
         $year = $this->year;
         $month = $this->month;
 
+        $is_prediction = !(10*$year + $month < 10*$current_year + $current_month);
+
+        $update_bills = BillingSettings::$GENERATE_TAX_INVOICES->get(false);
+        $invoice_whitelist = BillingSettings::$TAX_INVOICE_WHITELIST->get([]);
+        $invoice_whitelist_enabled = count($invoice_whitelist) > 0;
+
+        //dd($invoice_whitelist, $invoice_whitelist_enabled);
+
         if ($force) {
             CorporationBill::where('month', $month)
-                ->where('year', $year)
-                ->delete();
-            CharacterBill::where('month', $month)
                 ->where('year', $year)
                 ->delete();
         }
@@ -104,10 +115,34 @@ class UpdateBills implements ShouldQueue
                     $bill = CharacterBill::where('character_id', $character['id'])
                         ->where('year', $year)
                         ->where('month', $month)
-                        ->get();
+                        ->first();
 
-                    if ($bill===null || $force) {
-                        $bill = new CharacterBill();
+                    $recompute = $bill===null || $force;
+
+                    $bill = $bill ?? new CharacterBill();
+                    if ($recompute) {
+                        $tax_invoice = $bill->tax_invoice;
+                        //var_dump(in_array($corp->corporation_id, $invoice_whitelist),$corp->corporation_id,$invoice_whitelist);
+                        if($update_bills && (!$invoice_whitelist_enabled || in_array($corp->corporation_id, $invoice_whitelist))) {
+                            if ($tax_invoice === null) {
+                                $tax_invoice = new TaxInvoice();
+                                $tax_invoice->user_id = $character["user_id"];
+                                $tax_invoice->character_id = $character['id'];
+                                $tax_invoice->receiver_corporation_id = $corp->corporation_id;
+                                $tax_invoice->paid = 0;
+                                $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
+                                $tax_invoice->reason_translation_data = ["month" => $month, "year" => $year];
+                                $tax_invoice->due_until = \Carbon\Carbon::create($year, $month, 1, 1, 1, 1, "Europe/London")->endOfMonth()->addDays(30);
+                            }
+                            if ($is_prediction) {
+                                $tax_invoice->state = "prediction";
+                            } else {
+                                $tax_invoice->state = "open";
+                            }
+                            $tax_invoice->amount = $character['mining_tax'];
+                            $tax_invoice->save();
+                        }
+
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;
                         $bill->year = $year;
@@ -116,6 +151,8 @@ class UpdateBills implements ShouldQueue
                         $bill->mining_tax = $character['mining_tax'];
                         $bill->mining_modifier = 0;//legacy
                         $bill->mining_taxrate = 0;//legacy
+                        $bill->user_id = $character["user_id"];
+                        $bill->tax_invoice_id = $tax_invoice->id ?? null;
                         $bill->save();
                     }
                 }

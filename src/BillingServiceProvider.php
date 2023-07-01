@@ -3,6 +3,10 @@
 namespace Denngarr\Seat\Billing;
 
 use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
+use Denngarr\Seat\Billing\Models\TaxInvoice;
+use Denngarr\Seat\Billing\Observers\CorporationWalletJournalObserver;
+use Denngarr\Seat\Billing\Observers\TaxInvoiceObserver;
+use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
 
@@ -20,6 +24,9 @@ class BillingServiceProvider extends AbstractSeatPlugin
         $this->add_migrations();
         $this->add_translations();
         $this->add_commands();
+
+        TaxInvoice::observe(TaxInvoiceObserver::class);
+        CorporationWalletJournal::observe(CorporationWalletJournalObserver::class);
     }
 
     /**
@@ -52,6 +59,7 @@ class BillingServiceProvider extends AbstractSeatPlugin
      */
     public function register()
     {
+        BillingSettings::init();
 
         $this->mergeConfigFrom(__DIR__ . '/Config/billing.sidebar.php', 'package.sidebar');
 
