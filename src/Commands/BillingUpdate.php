@@ -31,19 +31,21 @@ class BillingUpdate extends Command
         //ensure we update the last month
         $year = date('Y', strtotime('-1 month'));
         $month = date('n', strtotime('-1 month'));
+        $force = true;
 
         if (($this->argument('month')) && ($this->argument('year'))) {
             $year = $this->argument('year');
             $month = $this->argument('month');
+            $force = $this->option('force');
         }
 
         $year = intval($year);
         $month = intval($month);
 
         if($this->option('now')){
-            UpdateBills::dispatchNow($this->option('force'), $year, $month);
+            UpdateBills::dispatchNow($force, $year, $month);
         } else {
-            UpdateBills::dispatch($this->option('force'), $year, $month);
+            UpdateBills::dispatch($force, $year, $month);
         }
     }
 
