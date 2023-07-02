@@ -29,8 +29,8 @@ class BillingUpdateLive extends Command
     public function handle()
     {
         //ensure we update the last month
-        $year = date('Y');
-        $month = date('n');
+        $year = (int)date('Y');
+        $month = (int)date('n');
 
         if($this->option('now')){
             UpdateBills::dispatchNow(true, $year, $month);

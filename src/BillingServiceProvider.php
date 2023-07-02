@@ -85,6 +85,13 @@ class BillingServiceProvider extends AbstractSeatPlugin
         Artisan::command("billing:reset",function (){
            TaxInvoice::truncate();
         });
+
+        Artisan::command("billing:processJournalEntry {id}",function ($id){
+            $journal_entry = CorporationWalletJournal::find($id);
+            $journal_entry->delete();
+            $journal_entry->save();
+            logger()->error("scheduling tax processing 3");
+        });
     }
 
     /**
