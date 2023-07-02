@@ -117,7 +117,7 @@ class UpdateBills implements ShouldQueue
                         ->where('month', $month)
                         ->first();
 
-                    $recompute = $bill===null || $force;
+                    $recompute = ($bill===null || $force) && $character['mining_tax'] > BillingSettings::$INVOICE_THRESHOLD->get(0);
 
                     $bill = $bill ?? new CharacterBill();
                     if ($recompute) {

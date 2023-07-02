@@ -248,6 +248,12 @@
                     <textarea class="form-control" rows="7" style="resize: none;" id="whiteListCorps" name="tax_invoices_whitelist" placeholder="Doomheim&#10;C C P">{{$whitelist}}</textarea>
                 </div>
 
+                <div class="form-group">
+                    <label for="whiteListCorps">Invoice Threshold</label>
+                    <small>Character that have to pay less than this value don't have to pay any tax.</small>
+                    <input type="number" class="form-control" name="invoice_threshold" value="{{ \Denngarr\Seat\Billing\BillingSettings::$INVOICE_THRESHOLD->get(0) }}">
+                </div>
+
             </div>
 
             <div class="card-footer">
