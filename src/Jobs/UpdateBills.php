@@ -49,7 +49,7 @@ class UpdateBills implements ShouldQueue
         $year = $this->year;
         $month = $this->month;
 
-        $is_prediction = !(10*$year + $month < 10*$current_year + $current_month);
+        $is_prediction = 100*$year + $month >= 100*$current_year + $current_month;
 
         $update_bills = BillingSettings::$GENERATE_TAX_INVOICES->get(false);
         $invoice_whitelist = BillingSettings::$TAX_INVOICE_WHITELIST->get([]);
