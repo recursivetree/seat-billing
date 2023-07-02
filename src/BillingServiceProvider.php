@@ -9,6 +9,7 @@ use Denngarr\Seat\Billing\Observers\TaxInvoiceObserver;
 use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
+use Illuminate\Support\Facades\Artisan;
 
 class BillingServiceProvider extends AbstractSeatPlugin
 {
@@ -80,6 +81,10 @@ class BillingServiceProvider extends AbstractSeatPlugin
             BillingUpdate::class,
             BillingUpdateLive::class
         ]);
+
+        Artisan::command("billing:reset",function (){
+           TaxInvoice::truncate();
+        });
     }
 
     /**
