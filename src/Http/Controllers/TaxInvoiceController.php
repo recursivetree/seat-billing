@@ -69,7 +69,7 @@ class TaxInvoiceController extends Controller
             ->select("user_id")
             ->selectRaw("SUM(amount) as total")
             ->selectRaw("SUM(paid) as paid")
-            ->selectRaw("(select SUM(CAST(amount AS SIGNED) - CAST(paid AS SIGNED)) from seat_billing_tax_invoices as inside where inside.user_id = seat_billing_tax_invoices.user_id and inside.receiver_corporation_id=receiver_corporation_id and inside.due_until<CURRENT_DATE()) as overdue")
+            ->selectRaw("(select SUM(CAST(amount AS SIGNED) - CAST(paid AS SIGNED)) from seat_billing_tax_invoices as inside where inside.user_id = seat_billing_tax_invoices.user_id and inside.receiver_corporation_id=receiver_corporation_id and inside.due_until<CURRENT_DATE() and inside.state in (\"open\",\"pending\") ) as overdue")
             ->where("receiver_corporation_id", $corporation_id)
             ->groupBy("user_id")
             ->get();
