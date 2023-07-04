@@ -41,21 +41,9 @@ class UpdateBills implements ShouldQueue
 
 
     public function handle(){
-        $now = now();
-        $current_year = $now->year;
-        $current_month = $now->month;
-
         $force = $this->force;
         $year = $this->year;
         $month = $this->month;
-
-        $is_prediction = 100*$year + $month >= 100*$current_year + $current_month;
-
-        $update_bills = BillingSettings::$GENERATE_TAX_INVOICES->get(false);
-        $invoice_whitelist = BillingSettings::$TAX_INVOICE_WHITELIST->get([]);
-        $invoice_whitelist_enabled = count($invoice_whitelist) > 0;
-
-        //dd($invoice_whitelist, $invoice_whitelist_enabled);
 
         if ($force) {
             CorporationBill::where('month', $month)
@@ -117,32 +105,10 @@ class UpdateBills implements ShouldQueue
                         ->where('month', $month)
                         ->first();
 
-                    $recompute = ($bill===null || $force) && $character['mining_tax'] > BillingSettings::$INVOICE_THRESHOLD->get(0);
+                    $recompute = $bill===null || $force;
 
                     $bill = $bill ?? new CharacterBill();
                     if ($recompute) {
-                        $tax_invoice = $bill->tax_invoice;
-                        //var_dump(in_array($corp->corporation_id, $invoice_whitelist),$corp->corporation_id,$invoice_whitelist);
-                        if($update_bills && (!$invoice_whitelist_enabled || in_array($corp->corporation_id, $invoice_whitelist))) {
-                            if ($tax_invoice === null) {
-                                $tax_invoice = new TaxInvoice();
-                                $tax_invoice->user_id = $character["user_id"];
-                                $tax_invoice->character_id = $character['id'];
-                                $tax_invoice->receiver_corporation_id = $corp->corporation_id;
-                                $tax_invoice->paid = 0;
-                                $tax_invoice->reason_translation_key = "billing::billing.tax_invoice_message";
-                                $tax_invoice->reason_translation_data = ["month" => $month, "year" => $year];
-                                $tax_invoice->due_until = \Carbon\Carbon::create($year, $month, 1, 1, 1, 1, "Europe/London")->endOfMonth()->addDays(30);
-                            }
-                            if ($is_prediction) {
-                                $tax_invoice->state = "prediction";
-                            } else {
-                                $tax_invoice->state = "open";
-                            }
-                            $tax_invoice->amount = $character['mining_tax'];
-                            $tax_invoice->save();
-                        }
-
                         $bill->character_id = $character['id'];
                         $bill->corporation_id = $corp->corporation_id;
                         $bill->year = $year;
