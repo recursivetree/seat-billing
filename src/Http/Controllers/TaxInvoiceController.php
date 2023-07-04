@@ -4,6 +4,7 @@ namespace Denngarr\Seat\Billing\Http\Controllers;
 
 use Denngarr\Seat\Billing\Helpers\TaxCode;
 use Denngarr\Seat\Billing\Jobs\BalanceTaxPayment;
+use Denngarr\Seat\Billing\Jobs\GenerateInvoices;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
@@ -76,5 +77,14 @@ class TaxInvoiceController extends Controller
 
 
         return view("billing::tax.corporationOverviewPage", compact("corporation","total_invoices_count", "open_invoices_count","completed_invoices_count","open_isk", "user_totals", "overdue_isk"));
+    }
+
+    public function regenerateTaxInvoices(Request $request){
+        $request->validate([
+            "month"=>"date_format:Y-m"
+        ]);
+        $month = carbon($request->month);
+        GenerateInvoices::dispatch($month->year, $month->month);
+        return redirect()->back()->with("success","Scheduled invoice generation.");
     }
 }

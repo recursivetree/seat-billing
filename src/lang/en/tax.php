@@ -45,5 +45,8 @@ return [
     'tax_user_overdue_amount'=>'Overdue Tax',
     'tax_user_overdue_amount_desc'=>'This much ISK remains unpaid after the deadline',
     'instructions'=>'Instructions',
-    'tax_instructions' => 'On this page you have an overview of the tax you have to pay. There is a table for each corporation you owe taxes to, containing how much isk you have to pay and the payment status. You can pay your taxes by transferring the ISK listed under "remaining" to the corporation. Make sure to include the tax code in the description of the payment, or the payment can\'t be automatically detected. After you initiate the payment, it can take up to an hour until the payment status changes. This is due to how ESI work, please have some patience.'
+    'tax_instructions' => 'On this page you have an overview of the tax you have to pay. There is a table for each corporation you owe taxes to, containing how much isk you have to pay and the payment status. You can pay your taxes by transferring the ISK listed under "remaining" to the corporation. Make sure to include the tax code in the description of the payment, or the payment can\'t be automatically detected. After you initiate the payment, it can take up to an hour until the payment status changes. This is due to how ESI work, please have some patience.',
+    'regenerate_tax_invoices' => 'Regenerate Tax Invoices',
+    'month'=>'Month',
+    'regenerate_tax_invoices_desc'=>'Already paid isk won\'t be lost.',
 ];

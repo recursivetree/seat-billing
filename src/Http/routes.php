@@ -80,5 +80,10 @@ Route::group([
         'uses' => 'TaxInvoiceController@corporationOverviewPage',
         'middleware' => 'can:billing.tax_manager'
     ]);
+
+    Route::post('/corporations/regenerate/invoices', [
+        'as' => 'tax.regenerateInvoices',
+        'uses' => 'TaxInvoiceController@regenerateTaxInvoices',
+    ]);
 });
 

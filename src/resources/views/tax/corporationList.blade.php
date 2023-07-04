@@ -36,6 +36,23 @@
             </table>
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-header d-flex flex-row- align-items-baseline justify-content-between">
+            <h3 class="card-title flex-grow-1">{{ trans('billing::tax.regenerate_tax_invoices') }}</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route("tax.regenerateInvoices") }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="month">{{ trans('billing::tax.month') }}</label>
+                    <input type="month" name="month" id="month" class="form-control" style="max-width: 20em">
+                    <small>{{ trans('billing::tax.regenerate_tax_invoices_desc') }}</small>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ trans('billing::tax.regenerate_tax_invoices') }}</button>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('javascript')
