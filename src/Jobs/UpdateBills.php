@@ -118,7 +118,7 @@ class UpdateBills implements ShouldQueue
                         $bill->mining_modifier = 0;//legacy
                         $bill->mining_taxrate = 0;//legacy
                         $bill->user_id = $character["user_id"];
-                        $bill->tax_invoice_id = $tax_invoice->id ?? null;
+                        $bill->tax_invoice_id = null;
                         $bill->save();
                     }
                 }
