@@ -88,7 +88,7 @@
                 <tbody>
                     @foreach($user_totals as $user)
                         <tr>
-                            <td data-sort="{{$user->user->main_character_id}}">@include("web::partials.character",["character"=>$user->user->main_character])</td>
+                            <td data-sort="{{$user->user->main_character_id ?? 0}}">@include("web::partials.character",["character"=>$user->user->main_character ?? \Denngarr\Seat\Billing\Models\TaxInvoice::where("user_id",$user->user_id)->first()->character])</td>
                             <td data-sort="{{$user->total}}">{{ number($user->total,0) }} ISK</td>
                             <td data-sort="{{$user->total - $user->paid}}">{{ number($user->total - $user->paid,0) }} ISK</td>
                             @if($user->overdue > 0)
