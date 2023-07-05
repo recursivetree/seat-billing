@@ -86,7 +86,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <select class="form-control" id="corpspinner">
+                        <select class="form-control w-100" id="corpspinner">
                             <option disabled selected value="0">Please Choose a Corp</option>
                             @foreach($stats as $row)
                                 <option value="{{ $row->corporation->corporation_id }}">{{ $row->corporation->name }}</option>
@@ -153,10 +153,15 @@
 
         ids_to_names();
 
-        $('#corpspinner').change(function () {
+
+        $('#corpspinner').select2({
+            width: '100%' // need to override the changed default
+        });
+
+        $('#corpspinner').on('select2:select',function (e) {
 
             $('#indivmining').find('tbody').empty();
-            id = $('#corpspinner').find(":selected").val();
+            id = e.params.data.id;
             year = $('#year').val();
             month = $('#month').val();
 

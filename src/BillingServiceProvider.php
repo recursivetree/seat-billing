@@ -3,9 +3,12 @@
 namespace Denngarr\Seat\Billing;
 
 use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
+use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Denngarr\Seat\Billing\Observers\CorporationWalletJournalObserver;
 use Denngarr\Seat\Billing\Observers\TaxInvoiceObserver;
+use Seat\Eveapi\Jobs\Character\Info as CharacterInfoJob;
+use Seat\Eveapi\Jobs\Corporation\Info as CorporationInfoJob;
 use Seat\Eveapi\Models\Wallet\CorporationWalletJournal;
 use Seat\Services\AbstractSeatPlugin;
 use Denngarr\Seat\Billing\Commands\BillingUpdate;
@@ -91,6 +94,17 @@ class BillingServiceProvider extends AbstractSeatPlugin
             $journal_entry->delete();
             $journal_entry->save();
             logger()->error("scheduling tax processing 3");
+        });
+
+        Artisan::command("billing:scheduleCharInfos",function (){
+            $ids = CharacterBill::select("character_id")->distinct()->pluck("character_id");
+            foreach ($ids as $id){
+                CharacterInfoJob::dispatch($id);
+            }
+            $ids = CharacterBill::select("corporation_id")->distinct()->pluck("corporation_id");
+            foreach ($ids as $id){
+                CorporationInfoJob::dispatch($id);
+            }
         });
     }
 
