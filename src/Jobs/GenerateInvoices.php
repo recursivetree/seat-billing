@@ -53,12 +53,16 @@ class GenerateInvoices implements ShouldQueue
         $current_month = $now->month;
         $is_prediction = 100*$this->year + $this->month >= 100*$current_year + $current_month;
 
+        $threshold = (int)BillingSettings::$INVOICE_THRESHOLD->get(0);
+
         $bills = $query->get();
         foreach ($bills as $bill){
             $tax_invoice = $bill->tax_invoice;
 
-            if($tax_invoice && $bill->mining_tax < BillingSettings::$INVOICE_THRESHOLD->get(0)){
+            if($tax_invoice && $bill->mining_tax < $threshold){
                 $tax_invoice->delete();
+                $bill->tax_invoice_id = null;
+                $bill->save();
                 continue;
             }
 
