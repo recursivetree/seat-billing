@@ -86,7 +86,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <select class="form-control" id="corpspinner">
+                        <select class="form-control w-100" id="corpspinner">
                             <option disabled selected value="0">Please Choose a Corp</option>
                             @foreach($stats as $row)
                                 <option value="{{ $row->corporation->corporation_id }}">{{ $row->corporation->name }}</option>
@@ -153,10 +153,15 @@
 
         ids_to_names();
 
-        $('#corpspinner').change(function () {
+
+        $('#corpspinner').select2({
+            width: '100%' // need to override the changed default
+        });
+
+        $('#corpspinner').on('select2:select',function (e) {
 
             $('#indivmining').find('tbody').empty();
-            id = $('#corpspinner').find(":selected").val();
+            id = e.params.data.id;
             year = $('#year').val();
             month = $('#month').val();
 
@@ -172,9 +177,9 @@
                     if (result) {
                         table.clear();
                         for (var char of result) {
-                            const name = char.character ? char.character.name : "{{ trans('web::seat.unknown') }}"
+                            const name = char.character_name ? char.character_name : "{{ trans('web::seat.unknown') }}"
                             const tr = document.createElement("tr")
-                            tr.innerHTML = '<td><a href="/characters/'+ char.character_id +'/mining-ledger">'+name+'</a></td><td data-sort="'+char.mining_total+'">'+ new Intl.NumberFormat('en-US').format(char.mining_total)+ ' ISK</td><td data-sort="'+char.mining_tax+'">'+ new Intl.NumberFormat('en-US').format(char.mining_tax)+" ISK</td>"
+                            tr.innerHTML = '<td><a href="/billing/user/character/'+ char.character_id +'#bills'+year.toString()+month.toString()+'">'+name+'</a></td><td data-sort="'+char.mining_total+'">'+ new Intl.NumberFormat('en-US').format(char.mining_total)+ ' ISK</td><td data-sort="'+char.mining_tax+'">'+ new Intl.NumberFormat('en-US').format(char.mining_tax)+" ISK</td>"
                             table.row.add(tr);
                         }
                         table.draw();

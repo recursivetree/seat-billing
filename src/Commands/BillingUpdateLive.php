@@ -2,6 +2,7 @@
 
 namespace Denngarr\Seat\Billing\Commands;
 
+use Denngarr\Seat\Billing\Jobs\GenerateInvoices;
 use Denngarr\Seat\Billing\Jobs\UpdateBills;
 use Illuminate\Console\Command;
 
@@ -29,13 +30,16 @@ class BillingUpdateLive extends Command
     public function handle()
     {
         //ensure we update the last month
-        $year = date('Y');
-        $month = date('n');
+        $year = (int)date('Y');
+        $month = (int)date('n');
 
         if($this->option('now')){
             UpdateBills::dispatchSync(true, $year, $month);
+            GenerateInvoices::dispatchSync($year, $month);
         } else {
-            UpdateBills::dispatch(true, $year, $month);
+            UpdateBills::withChain([
+                new GenerateInvoices($year, $month)
+            ])->dispatch(true, $year, $month);
         }
     }
 
