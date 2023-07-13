@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seat\Eveapi\Jobs\Middleware\WithoutOverlapping;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Seat\Eveapi\Models\RefreshToken;
 
 class ProcessTaxPayment implements ShouldQueue
