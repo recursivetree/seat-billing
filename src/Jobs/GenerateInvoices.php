@@ -66,8 +66,6 @@ class GenerateInvoices implements ShouldQueue
                 continue;
             }
 
-            //dd($bill->tax_invoice_id, $tax_invoice);
-
             if ($tax_invoice === null) {
                 $tax_invoice = new TaxInvoice();
                 $tax_invoice->user_id = $bill->user_id;
