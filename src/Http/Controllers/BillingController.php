@@ -3,6 +3,7 @@
 namespace Denngarr\Seat\Billing\Http\Controllers;
 
 use Denngarr\Seat\Billing\BillingSettings;
+use Denngarr\Seat\Billing\Jobs\UpdateBills;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
@@ -31,6 +32,17 @@ class BillingController extends Controller
     }
 
     const ALLOWED_PRICE_SOURCES = ["sell_price","buy_price","adjusted_price","average_price"];
+
+    public function recalculateMonth(Request $request){
+        $request->validate([
+            'month'=>'required|integer|min:1|max:12',
+            'year'=>'required|integer'
+        ]);
+
+        UpdateBills::dispatch(true, (int)$request->year, (int)$request->month);
+
+        return redirect()->back()->with('success','Successfully scheduled bill recalculation!');
+    }
 
     public function saveBillingSettings(Request $request)
     {

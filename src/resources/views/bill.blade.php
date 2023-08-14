@@ -17,6 +17,15 @@
         <li class="nav-item"><a class="nav-link active" href="#tab1"
                                 data-toggle="tab">{{ trans('billing::billing.summary-corp-mining') }}</a></li>
         <li class="nav-item"><a href="#tab4" data-toggle="tab" class="nav-link"><i class="fa fa-history"></i> Previous Bills</a></li>
+
+        <li class="nav-item ml-auto">
+            <form action="{{ route("billing.recalculateMonth") }}" method="POST">
+                @csrf
+                <input type="hidden" name="year" value="{{ $year }}">
+                <input type="hidden" name="month" value="{{ $month }}">
+                <button type="submit" class="btn btn-warning confirmform" data-seat-action="recalculate the bills for {{$year}}-{{$month}}? Recalculating on old data might lead to different results. Old results can't be restored. Continue">Recalculate Bill</button>
+            </form>
+        </li>
     </ul>
 
     <div class="tab-content">
