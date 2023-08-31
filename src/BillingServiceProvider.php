@@ -3,6 +3,7 @@
 namespace Denngarr\Seat\Billing;
 
 use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
+use Denngarr\Seat\Billing\Jobs\GenerateInvoices;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Denngarr\Seat\Billing\Observers\CorporationWalletJournalObserver;
@@ -87,6 +88,7 @@ class BillingServiceProvider extends AbstractSeatPlugin
 
         Artisan::command("billing:reset",function (){
            TaxInvoice::truncate();
+           CharacterBill::query()->update(['tax_invoice_id'=>null]);
         });
 
         Artisan::command("billing:processJournalEntry {id}",function ($id){

@@ -32,22 +32,24 @@ class BillingUpdate extends Command
         //ensure we update the last month
         $year = date('Y', strtotime('-1 month'));
         $month = date('n', strtotime('-1 month'));
+        $historical = false;
 
         if (($this->argument('month')) && ($this->argument('year'))) {
             $year = $this->argument('year');
             $month = $this->argument('month');
+            $historical = true;
         }
 
         $year = intval($year);
         $month = intval($month);
 
         if($this->option('now')){
-            UpdateBills::dispatchSync($this->option('force'), $year, $month);
+            UpdateBills::dispatchSync($this->option('force') || !$historical, $year, $month);
             GenerateInvoices::dispatchSync($year, $month);
         } else {
             UpdateBills::withChain([
                 new GenerateInvoices($year, $month)
-            ])->dispatch($this->option('force'), $year, $month);
+            ])->dispatch($this->option('force') || !$historical, $year, $month);
         }
     }
 

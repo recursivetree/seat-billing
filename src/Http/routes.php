@@ -23,6 +23,12 @@ Route::group([
         'middleware' => 'can:billing.settings'
     ]);
 
+    Route::post('/recalculate/month', [
+        'as' => 'billing.recalculateMonth',
+        'uses' => 'BillingController@recalculateMonth',
+        'middleware' => 'can:billing.settings'
+    ]);
+
     Route::get('/past/{year}/{month}', [
         'as' => 'billing.pastbilling',
         'uses' => 'BillingController@showBill',
