@@ -254,6 +254,19 @@
                     <input type="number" class="form-control" name="invoice_threshold" value="{{ \Denngarr\Seat\Billing\BillingSettings::$INVOICE_THRESHOLD->get(0) }}">
                 </div>
 
+                <div class="form-group">
+                    <label for="holdingCorps">Holding Corps</label><br>
+                    <small>
+                        Allows tax payments to other corporations than the tax invoice was issued to.
+                        If no holding corp is specified, only the corp that issued the tax invoice can receive payments.
+                        Multiple holding corporations can be specified.
+                        As soon as one corporation is specified, only the specified corporations can receive payments.
+                        In case that's a different corporation than the corp that issued the invoice, this means the issuing corp CAN'T receive the payment.
+                        Associations are specified like this: <code>corp name -> other corp name.</code>
+                    </small>
+                    <textarea class="form-control" rows="7" style="resize: none;" id="holdingCorps" name="tax_invoice_holding_corps" placeholder="Doomheim -> C C P">{{$tax_receiver_corps??''}}</textarea>
+                </div>
+
             </div>
 
             <div class="card-footer">

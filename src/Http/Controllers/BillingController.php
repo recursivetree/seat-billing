@@ -7,6 +7,9 @@ use Denngarr\Seat\Billing\Jobs\UpdateBills;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\CorporationBill;
 use Denngarr\Seat\Billing\Models\OreTax;
+use Denngarr\Seat\Billing\Models\TaxReceiverCorporation;
+use ErrorException;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Seat\Eveapi\Models\Corporation\CorporationInfo;
 use Seat\Eveapi\Models\RefreshToken;
@@ -28,7 +31,11 @@ class BillingController extends Controller
             })
             ->toArray());
 
-        return view('billing::settings', compact("ore_tax","whitelist"));
+        $tax_receiver_corps = implode("\n",TaxReceiverCorporation::all()->map(function ($corp){
+           return sprintf('%s -> %s',$corp->receiver_corporation->name, $corp->substitute_corporation->name);
+        })->toArray());
+
+        return view('billing::settings', compact("ore_tax","whitelist", "tax_receiver_corps"));
     }
 
     const ALLOWED_PRICE_SOURCES = ["sell_price","buy_price","adjusted_price","average_price"];
@@ -64,14 +71,15 @@ class BillingController extends Controller
             'pricesource'       => 'required|string|in:'. implode(",",self::ALLOWED_PRICE_SOURCES),
             'tax_invoices'      => 'required|string|in:enabled,disabled',
             'tax_invoices_whitelist'=>'nullable|string',
-            'invoice_threshold' => 'required|integer|min:0'
+            'invoice_threshold' => 'required|integer|min:0',
+            'tax_invoice_holding_corps'=>'nullable|string',
         ]);
 
         if($request->tax_invoices_whitelist !== null) {
             $parts = explode("\r\n", $request->tax_invoices_whitelist);
             $corps = collect($parts)
                 ->map(function ($name) {
-                    return CorporationInfo::where("name", $name)->first()->corporation_id;
+                    return CorporationInfo::where("name", $name)->first()->corporation_id ?? null;
                 })
                 ->filter(function ($item) {
                     return $item !== null;
@@ -83,6 +91,30 @@ class BillingController extends Controller
             BillingSettings::$TAX_INVOICE_WHITELIST->set($corps);
         } else {
             BillingSettings::$TAX_INVOICE_WHITELIST->set([]);
+        }
+
+        if($request->tax_invoice_holding_corps !== null) {
+            preg_match_all("/^\W*?(?<from>\w.*?)\W*?->\W*?(?<to>\w.*?)\W*?$/m",$request->tax_invoice_holding_corps, $matches, PREG_SET_ORDER);
+            try {
+                $mappings = collect($matches)->map(function ($mapping) {
+                    $receiver = CorporationInfo::where("name", $mapping['from'])->first()->corporation_id;
+                    $substitute = CorporationInfo::where("name", $mapping['to'])->first()->corporation_id;
+                    return [
+                        'receiver_corporation_id' => $receiver,
+                        'substitute_corporation_id' => $substitute
+                    ];
+                });
+            } catch (ErrorException $e) {
+                return redirect()->back()->with("error", "Unrecognised corporation in receiver substitution list");
+            }
+
+            TaxReceiverCorporation::query()->delete();
+            foreach ($mappings as $mapping){
+                $m = new TaxReceiverCorporation();
+                $m->receiver_corporation_id = $mapping['receiver_corporation_id'];
+                $m->substitute_corporation_id = $mapping['substitute_corporation_id'];
+                $m->save();
+            }
         }
 
         setting(["oremodifier", intval($request->oremodifier)], true);
