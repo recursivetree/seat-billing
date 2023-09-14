@@ -67,7 +67,9 @@
                                     <td data-sort="{{ carbon($invoice->due_until)->timestamp }}">{{ carbon($invoice->due_until)->format('M d Y') }}</td>
                                 @endif
                                 <td>
-                                    <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
+                                    @if(!in_array($invoice->state,['prediction','completed']))
+                                        <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -77,7 +79,7 @@
                             <td><b>{{ trans('billing::billing.total') }}:</b></td>
                             <td></td>
                             <td></td>
-                            <td>{{ number($corp_invoices->sum("amount") - $corp_invoices->sum("paid"), 0) }} ISK</td>
+                            <td>{{ number($corp_invoices->where("state","!==","prediction")->sum("amount") - $corp_invoices->where("state","!==","prediction")->sum("paid"), 0) }} ISK</td>
                             <td></td>
                             <td></td>
                             <td></td>
