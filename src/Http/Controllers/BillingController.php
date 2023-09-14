@@ -115,6 +115,8 @@ class BillingController extends Controller
                 $m->substitute_corporation_id = $mapping['substitute_corporation_id'];
                 $m->save();
             }
+        } else {
+            TaxReceiverCorporation::query()->delete();
         }
 
         setting(["oremodifier", intval($request->oremodifier)], true);

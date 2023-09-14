@@ -4,6 +4,7 @@ namespace Denngarr\Seat\Billing;
 
 use Denngarr\Seat\Billing\Commands\BillingUpdateLive;
 use Denngarr\Seat\Billing\Jobs\GenerateInvoices;
+use Denngarr\Seat\Billing\Jobs\ProcessTaxPayment;
 use Denngarr\Seat\Billing\Models\CharacterBill;
 use Denngarr\Seat\Billing\Models\TaxInvoice;
 use Denngarr\Seat\Billing\Observers\CorporationWalletJournalObserver;
@@ -93,9 +94,7 @@ class BillingServiceProvider extends AbstractSeatPlugin
 
         Artisan::command("billing:processJournalEntry {id}",function ($id){
             $journal_entry = CorporationWalletJournal::find($id);
-            $journal_entry->delete();
-            $journal_entry->save();
-            logger()->error("scheduling tax processing 3");
+            ProcessTaxPayment::dispatchNow($journal_entry);
         });
 
         Artisan::command("billing:scheduleCharInfos",function (){
