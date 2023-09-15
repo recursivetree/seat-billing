@@ -79,12 +79,17 @@
                             <td><b>{{ trans('billing::billing.total') }}:</b></td>
                             <td></td>
                             <td></td>
-                            <td>{{ number($corp_invoices->where("state","!==","prediction")->sum("amount") - $corp_invoices->where("state","!==","prediction")->sum("paid"), 0) }} ISK</td>
+                            <td>
+                               @php($total = $corp_invoices->where("state","!==","prediction")->sum("amount") - $corp_invoices->where("state","!==","prediction")->sum("paid"))
+                                {{ number($total, 0) }} ISK
+                            </td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td>
-                                <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
+                                @if($total > 0)
+                                    <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
+                                @endif
                             </td>
                         </tr>
                     </tfoot>
