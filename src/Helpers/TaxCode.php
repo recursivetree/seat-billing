@@ -94,7 +94,6 @@ class TaxCode
         switch ($this->type){
             case self::SINGLE_INVOICE_CODE: {
                 return TaxInvoice::where("id",$this->id)
-                    ->where("user_id", $user_id)
                     ->get();
             }
             case self::CORPORATION_INVOICE_CODE: {
