@@ -15,6 +15,7 @@ return [
     'tax_reason'=>'Reason',
     'remaining_tax'=>'Remaining',
     'tax_state'=>'Payment State',
+    'tax_states'=>'Payment States',
     'tax_code'=>'Tax Code',
     'tax_no_matching_invoice'=>'You paid :tax ISK as tax to \':corp\' using the code \':code\', but there are no open tax invoices that could be covered.',
     'too_much_tax_paid'=>'You have paid :tax ISK too much to \':corp\' while paying taxes using the code \':code\'.',
@@ -49,4 +50,9 @@ return [
     'regenerate_tax_invoices' => 'Regenerate Tax Invoices',
     'month'=>'Month',
     'regenerate_tax_invoices_desc'=>'Already paid isk won\'t be lost.',
+    'tax_state_open_desc'=>'You should proceed to pay the invoice until the specified date.',
+    'tax_state_pending_desc'=>'The invoice has been partially paid. Please pay the remaining amount until the specified date.',
+    'tax_state_completed_desc'=>'The invoice has been fully paid. You don\'t have to do anything.',
+    'tax_state_prediction_desc'=>'This is the predicted tax you will have to pay at the end of the month. It is <b>not</b> possible to pay predictions until the next month starts.',
+    'tax_state_overtaxed_desc'=>'It seems like you have transferred a little bit too much ISK to your corp. This is not an issue, you can use the surplus to pay the taxes next month. When there is a new open invoices, use the <i>:button</i> button to balance the payments out.',
 ];

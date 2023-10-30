@@ -11,9 +11,19 @@
             <h3 class="card-title">{{ trans('billing::tax.instructions') }}</h3>
         </div>
         <div class="card-body">
+            <h6>{{ trans('billing::tax.instructions') }}</h6>
             <p>
                 {{ trans('billing::tax.tax_instructions') }}
             </p>
+            <h6> {{ trans('billing::tax.tax_states') }}</h6>
+            <ul>
+                <li><span class="badge badge-warning">{{ trans('billing::tax.tax_state_open') }}</span> {{ trans('billing::tax.tax_state_open_desc') }}</li>
+                <li><span class="badge badge-secondary">{{ trans('billing::tax.tax_state_pending') }}</span> {{ trans('billing::tax.tax_state_pending_desc') }}</li>
+                <li><span class="badge badge-success">{{ trans('billing::tax.tax_state_completed') }}</span> {{ trans('billing::tax.tax_state_completed_desc') }}</li>
+                <li><span class="badge badge-success">{{ trans('billing::tax.tax_state_prediction') }}</span> {!! trans('billing::tax.tax_state_prediction_desc') !!}</li>
+                <li><span class="badge badge-danger">{{ trans('billing::tax.tax_state_overtaxed') }}</span> {!! trans('billing::tax.tax_state_overtaxed_desc',['button'=>trans('billing::tax.balance_overpayments')]) !!}</li>
+
+            </ul>
         </div>
     </div>
 
