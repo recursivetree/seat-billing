@@ -73,6 +73,7 @@ class BillingController extends Controller
             'tax_invoices_whitelist'=>'nullable|string',
             'invoice_threshold' => 'required|integer|min:0',
             'tax_invoice_holding_corps'=>'nullable|string',
+            'tax_codes' => 'required|string|in:enabled,disabled',
         ]);
 
         if($request->tax_invoices_whitelist !== null) {
@@ -131,6 +132,7 @@ class BillingController extends Controller
         setting(["price_source", $request->pricesource], true);
         BillingSettings::$GENERATE_TAX_INVOICES->set($request->tax_invoices === "enabled");
         BillingSettings::$INVOICE_THRESHOLD->set($request->invoice_threshold);
+        BillingSettings::$ALWAYS_SHOW_TAX_CODES->set($request->tax_codes === "enabled");
 
         OreTax::updateOrCreate(["group_id"=>1923],["tax_rate"=>intval($request->r64taxmodifier)]);
         OreTax::updateOrCreate(["group_id"=>1922],["tax_rate"=>intval($request->r32taxmodifier)]);

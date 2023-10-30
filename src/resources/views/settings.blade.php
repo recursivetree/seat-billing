@@ -267,6 +267,23 @@
                     <textarea class="form-control" rows="7" style="resize: none;" id="holdingCorps" name="tax_invoice_holding_corps" placeholder="Doomheim -> C C P">{{$tax_receiver_corps??''}}</textarea>
                 </div>
 
+                <div class="form-group">
+                    <label>Tax Code Visibility</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tax_codes" id="tax_codes1" value="disabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false)===false)>
+                        <label class="form-check-label" for="tax_codes1">
+                            Only show tax codes for invoices that can be paid. <small class="text-muted">This option is recommended.</small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tax_codes" id="tax_codes2" value="enabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false)===true)>
+                        <label class="form-check-label" for="tax_codes2">
+                            Always show tax codes.
+                            <small class="text-muted">By enabling this option, you acknowledge that predictions can't be paid until the end of the month, and you promise not to ask about this on discord.</small>
+                        </label>
+                    </div>
+                </div>
+
             </div>
 
             <div class="card-footer">

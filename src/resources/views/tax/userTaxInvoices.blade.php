@@ -67,7 +67,7 @@
                                     <td data-sort="{{ carbon($invoice->due_until)->timestamp }}">{{ carbon($invoice->due_until)->format('M d Y') }}</td>
                                 @endif
                                 <td>
-                                    @if(!in_array($invoice->state,['prediction','completed']))
+                                    @if(!in_array($invoice->state,['prediction','completed']) || \Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false))
                                         <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
                                     @endif
                                 </td>
@@ -87,7 +87,7 @@
                             <td></td>
                             <td></td>
                             <td>
-                                @if($total > 0)
+                                @if($total > 0 || \Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false))
                                     <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
                                 @endif
                             </td>
