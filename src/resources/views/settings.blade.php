@@ -254,6 +254,36 @@
                     <input type="number" class="form-control" name="invoice_threshold" value="{{ \Denngarr\Seat\Billing\BillingSettings::$INVOICE_THRESHOLD->get(0) }}">
                 </div>
 
+                <div class="form-group">
+                    <label for="holdingCorps">Holding Corps</label><br>
+                    <small>
+                        Allows tax payments to other corporations than the tax invoice was issued to.
+                        If no holding corp is specified, only the corp that issued the tax invoice can receive payments.
+                        Multiple holding corporations can be specified.
+                        As soon as one corporation is specified, only the specified corporations can receive payments.
+                        In case that's a different corporation than the corp that issued the invoice, this means the issuing corp CAN'T receive the payment.
+                        Associations are specified like this: <code>corp name -> other corp name</code> and mean they that payments to <code>corp name</code> can cover invoices from <code>other corp name</code>.
+                    </small>
+                    <textarea class="form-control" rows="7" style="resize: none;" id="holdingCorps" name="tax_invoice_holding_corps" placeholder="Doomheim -> C C P">{{$tax_receiver_corps??''}}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tax Code Visibility</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tax_codes" id="tax_codes1" value="disabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false)===false)>
+                        <label class="form-check-label" for="tax_codes1">
+                            Only show tax codes for invoices that can be paid. <small class="text-muted">This option is recommended.</small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tax_codes" id="tax_codes2" value="enabled" @checked(\Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false)===true)>
+                        <label class="form-check-label" for="tax_codes2">
+                            Always show tax codes.
+                            <small class="text-muted">By enabling this option, you acknowledge that predictions can't be paid until the end of the month, and you promise not to ask about this on discord.</small>
+                        </label>
+                    </div>
+                </div>
+
             </div>
 
             <div class="card-footer">

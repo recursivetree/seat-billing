@@ -11,9 +11,19 @@
             <h3 class="card-title">{{ trans('billing::tax.instructions') }}</h3>
         </div>
         <div class="card-body">
+            <h6>{{ trans('billing::tax.instructions') }}</h6>
             <p>
                 {{ trans('billing::tax.tax_instructions') }}
             </p>
+            <h6> {{ trans('billing::tax.tax_states') }}</h6>
+            <ul>
+                <li><span class="badge badge-warning">{{ trans('billing::tax.tax_state_open') }}</span> {{ trans('billing::tax.tax_state_open_desc') }}</li>
+                <li><span class="badge badge-secondary">{{ trans('billing::tax.tax_state_pending') }}</span> {{ trans('billing::tax.tax_state_pending_desc') }}</li>
+                <li><span class="badge badge-success">{{ trans('billing::tax.tax_state_completed') }}</span> {{ trans('billing::tax.tax_state_completed_desc') }}</li>
+                <li><span class="badge badge-success">{{ trans('billing::tax.tax_state_prediction') }}</span> {!! trans('billing::tax.tax_state_prediction_desc') !!}</li>
+                <li><span class="badge badge-danger">{{ trans('billing::tax.tax_state_overtaxed') }}</span> {!! trans('billing::tax.tax_state_overtaxed_desc',['button'=>trans('billing::tax.balance_overpayments')]) !!}</li>
+
+            </ul>
         </div>
     </div>
 
@@ -67,7 +77,9 @@
                                     <td data-sort="{{ carbon($invoice->due_until)->timestamp }}">{{ carbon($invoice->due_until)->format('M d Y') }}</td>
                                 @endif
                                 <td>
-                                    <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
+                                    @if(!in_array($invoice->state,['prediction','completed']) || \Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false))
+                                        <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateInvoiceCode($invoice->id) }}</code>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -77,12 +89,17 @@
                             <td><b>{{ trans('billing::billing.total') }}:</b></td>
                             <td></td>
                             <td></td>
-                            <td>{{ number($corp_invoices->sum("amount") - $corp_invoices->sum("paid"), 0) }} ISK</td>
+                            <td>
+                               @php($total = $corp_invoices->where("state","!==","prediction")->sum("amount") - $corp_invoices->where("state","!==","prediction")->sum("paid"))
+                                {{ number($total, 0) }} ISK
+                            </td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td>
-                                <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
+                                @if($total > 0 || \Denngarr\Seat\Billing\BillingSettings::$ALWAYS_SHOW_TAX_CODES->get(false))
+                                    <code>{{ \Denngarr\Seat\Billing\Helpers\TaxCode::generateCorporationCode($corp_invoices->first()->receiver_corporation_id) }}</code>
+                                @endif
                             </td>
                         </tr>
                     </tfoot>

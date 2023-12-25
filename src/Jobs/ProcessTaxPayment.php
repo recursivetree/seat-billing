@@ -46,8 +46,15 @@ class ProcessTaxPayment implements ShouldQueue
         if(!$tax_code) return;
 
         $invoices = $tax_code->getTaxInvoices($token->user->id);
+
+        // filter out invoices that can't be covered by this payment because they belong to different corporations
+        $corporation_id = $this->journal_entry->second_party_id;
+        $invoices = $invoices->filter(function ($invoice) use ($corporation_id) {
+            return $invoice->isValidReceiverCorporation($corporation_id);
+        });
+
         if($invoices->isEmpty()){
-            $this->handleOverPayment($token->user->id,"billing::tax.tax_no_matching_invoice",(int)$this->journal_entry->amount,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+            $this->handleOverPayment($token->user->id,"billing::tax.tax_no_matching_invoice",(int)$this->journal_entry->amount,$corporation_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
             return;
         }
 
@@ -55,7 +62,7 @@ class ProcessTaxPayment implements ShouldQueue
 
         //overpayment
         if($remaining > 0){
-            $this->handleOverPayment($token->user->id,"billing::tax.too_much_tax_paid", $remaining,$this->journal_entry->second_party_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
+            $this->handleOverPayment($token->user->id,"billing::tax.too_much_tax_paid", $remaining,$corporation_id,$this->journal_entry->first_party_id,$this->journal_entry->reason);
         }
     }
 }

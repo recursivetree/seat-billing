@@ -28,4 +28,16 @@ class TaxInvoice extends Model
     public function receiver_corporation(){
         return $this->belongsTo(CorporationInfo::class,'receiver_corporation_id','corporation_id');
     }
+
+    public function isValidReceiverCorporation($corporation_id){
+        $special_rules = TaxReceiverCorporation::where("substitute_corporation_id",$this->receiver_corporation_id)->exists();
+
+        if(!$special_rules) {
+            return $this->receiver_corporation_id === $corporation_id;
+        }
+
+        return TaxReceiverCorporation::where("substitute_corporation_id",$this->receiver_corporation_id)
+            ->where("receiver_corporation_id",$corporation_id)
+            ->exists();
+    }
 }
