@@ -47,6 +47,7 @@ class GenerateInvoices implements ShouldQueue
         if(count($invoice_whitelist) > 0){
             $query->whereIn('corporation_id',$invoice_whitelist);
         }
+        $bills = $query->get();
 
         $now = now();
         $current_year = $now->year;
@@ -55,7 +56,6 @@ class GenerateInvoices implements ShouldQueue
 
         $threshold = (int)BillingSettings::$INVOICE_THRESHOLD->get(0);
 
-        $bills = $query->get();
         foreach ($bills as $bill){
             $tax_invoice = $bill->tax_invoice;
 

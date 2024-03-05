@@ -244,7 +244,7 @@
 
                 <div class="form-group">
                     <label for="whiteListCorps">Corporation Whitelist</label>
-                    <small>Paste one corporation name per line. Leaving this empty disables the whitelist.</small>
+                    <small>Paste one corporation name per line. Leaving this empty disables the whitelist. Note: The whitelist is broken for users having characters across different corporations. Due to the way the plugin works, it is not possible to fix this without unforeseen side-effects.</small>
                     <textarea class="form-control" rows="7" style="resize: none;" id="whiteListCorps" name="tax_invoices_whitelist" placeholder="Doomheim&#10;C C P">{{$whitelist}}</textarea>
                 </div>
 
