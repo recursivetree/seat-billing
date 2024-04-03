@@ -42,14 +42,25 @@ class BillingUpdate extends Command
 
         $year = intval($year);
         $month = intval($month);
+        $force = $this->option('force') || !$historical;
+
+        if($month<1 || $month>12) {
+            $this->error("Month is out of range");
+        }
+        if($year < 2015) {
+            $this->error("You are trying to generate a tax report for a year before seat was even created! Did you accidentally specify e.g. 24 instead of 2024?");
+            return;
+        }
+
+        $this->info(sprintf("updating month=%d year=%d force=%b", $month, $year, $force));
 
         if($this->option('now')){
-            UpdateBills::dispatchSync($this->option('force') || !$historical, $year, $month);
+            UpdateBills::dispatchSync($force, $year, $month);
             GenerateInvoices::dispatchSync($year, $month);
         } else {
             UpdateBills::withChain([
                 new GenerateInvoices($year, $month)
-            ])->dispatch($this->option('force') || !$historical, $year, $month);
+            ])->dispatch($force, $year, $month);
         }
     }
 
