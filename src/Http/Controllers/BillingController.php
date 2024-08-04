@@ -95,7 +95,7 @@ class BillingController extends Controller
         }
 
         if($request->tax_invoice_holding_corps !== null) {
-            preg_match_all("/^\W*?(?<from>\w.*?)\W*?->\W*?(?<to>\w.*?)\W*?$/m",$request->tax_invoice_holding_corps, $matches, PREG_SET_ORDER);
+            preg_match_all("/^\s*?(?<from>\S.*?)\s*?->\s*?(?<to>\S.*?)\s*?$/m",$request->tax_invoice_holding_corps, $matches, PREG_SET_ORDER);
             try {
                 $mappings = collect($matches)->map(function ($mapping) {
                     $receiver = CorporationInfo::where("name", $mapping['from'])->first()->corporation_id;
