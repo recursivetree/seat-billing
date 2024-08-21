@@ -56,6 +56,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                @include("treelib::creator-code")
             </div>
         </div>
 
@@ -86,6 +88,7 @@
                         </tbody>
                     </table>
                 </div>
+                @include("treelib::creator-code")
             </div>
         </div>
         <div class="tab-pane" id="tab3">
@@ -121,6 +124,7 @@
                         </tbody>
                     </table>
                 </div>
+                @include("treelib::creator-code")
             </div>
         </div>
         <div class="tab-pane" id="tab4">
@@ -144,6 +148,7 @@
                         @endforeach
                     </ul>
                 </div>
+                @include("treelib::creator-code")
             </div>
         </div>
     </div>

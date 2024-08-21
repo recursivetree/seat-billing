@@ -109,6 +109,7 @@
                 @endif
             </table>
         </div>
+        @include("treelib::creator-code")
     </div>
 
 @endsection

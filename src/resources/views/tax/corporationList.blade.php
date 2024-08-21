@@ -35,6 +35,7 @@
                 @endif
             </table>
         </div>
+        @include("treelib::creator-code")
     </div>
 
     <div class="card">
@@ -52,6 +53,7 @@
                 <button type="submit" class="btn btn-primary">{{ trans('billing::tax.regenerate_tax_invoices') }}</button>
             </form>
         </div>
+        @include("treelib::creator-code")
     </div>
 @endsection
 

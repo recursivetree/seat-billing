@@ -52,6 +52,7 @@
                         </tfoot>
                     </table>
             </div>
+            @include("treelib::creator-code")
         </div>
     @endforeach
 @endsection

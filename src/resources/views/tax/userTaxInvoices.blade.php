@@ -25,6 +25,7 @@
 
             </ul>
         </div>
+        @include("treelib::creator-code")
     </div>
 
     @if($invoices->isEmpty())
@@ -105,6 +106,7 @@
                     </tfoot>
                 </table>
             </div>
+            @include("treelib::creator-code")
         </div>
     @endforeach
 @endsection
